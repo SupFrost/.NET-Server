@@ -22,14 +22,20 @@ namespace Client
 
         private void Client_Load(object sender, EventArgs e)
         {
-            _s = new Networking.ClientSide();
-            _s.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
+           
         }
   
         private void btnSend_Click(object sender, EventArgs e)
         {
-            _s.ClientSend(Sender.SendGuid(new Guid()));
-   
+            Sender s = new Sender();
+         _s.ClientSend(s.RequestGuid());
+
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+ _s = new Networking.ClientSide();
+            _s.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
         }
     }
 }

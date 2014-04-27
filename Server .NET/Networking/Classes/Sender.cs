@@ -8,7 +8,7 @@ using Server.Networking;
 
 namespace Server.Networking.Classes
 {
-    class Sender
+    public class Sender
     {
         private Client _client;
         public Sender(Client client)

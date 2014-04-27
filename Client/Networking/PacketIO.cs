@@ -5,30 +5,41 @@ using System.IO;
 
 namespace Client.Networking
 {
-    class PacketWriter : BinaryWriter
+    class PacketWriter
 
     {
         private MemoryStream _ms;
 
-        public PacketWriter() : base()
+        public PacketWriter()
         {
             _ms = new MemoryStream();
-            OutStream = _ms;
+           
         }
 
         public byte[] GetBytes()
         {
-            Close();
+           _ms.Close();
             byte[] data = _ms.ToArray();
             return data;
+        }
+
+        public void Write(int integer)
+        {
+            byte[] data = BitConverter.GetBytes(integer);
+            _ms.Write(data,0,data.Length);
+            }
+
+        public void Write(byte[] data)
+        {
+            _ms.Write(data, 0, data.Length);
+
         }
 
         public void Write(Image image)
         {
             MemoryStream ms = new MemoryStream();
             image.Save(ms, ImageFormat.Png);
-
-             ms.Close();
+            ms.Close();
 
             byte[] imageBytes = ms.ToArray();
             Write(imageBytes.Length);

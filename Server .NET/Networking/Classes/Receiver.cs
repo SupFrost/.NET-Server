@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Server.Networking.Classes
     {
         private Client _client;
         private PacketReader pr;
+        
         public Receiver(Client client, byte[] data)
          {
 
@@ -32,8 +34,12 @@ namespace Server.Networking.Classes
                     switch (initialHeader)
                     {
                             case InitialHeaders.Guid:
-                            Guid guid = pr.ReadGuid();
-                            Console.WriteLine(guid.ToString());
+
+                            // Send Guid back!
+                            Sender s = new Sender(_client);
+                            s.SendGuid(_client.Guid);
+
+                           
                             break;
                     }
                     break;

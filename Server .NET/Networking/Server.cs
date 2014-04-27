@@ -42,7 +42,9 @@ namespace Server.Networking
                 client = new Client();
                 client.Socket = s;
                 client.ConnectionDateTime = DateTime.UtcNow;
-                client.Guid = new Guid();
+                client.Guid = Guid.NewGuid();
+
+                Console.WriteLine("Client connected : " + client.Guid);
 
                 lock (_lstClients)
                     _lstClients.Add(client.Guid, client);
@@ -98,9 +100,7 @@ namespace Server.Networking
                 receiver.HandlePacket();
                
 
-               
-
-                Console.WriteLine(client.LastPacketReceived);
+               Console.WriteLine(client.LastPacketReceived);
 
 
 
