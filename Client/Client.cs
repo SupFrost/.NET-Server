@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ namespace Client
 {
     public partial class Client : Form
     {
-        private Client _s;
+        private Networking.Client _s;
         public Client()
         {
             InitializeComponent();
@@ -20,7 +21,7 @@ namespace Client
 
         private void Client_Load(object sender, EventArgs e)
         {
-            _s = new Client();
+            _s = new Networking.Client();
             _s.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
         }
   
