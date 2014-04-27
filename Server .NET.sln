@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A340B6F8-D8E3-4DE5-B27F-A45729340EFF}"
 	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
+		Performance2.psess = Performance2.psess
 	EndProjectSection
 EndProject
 Global

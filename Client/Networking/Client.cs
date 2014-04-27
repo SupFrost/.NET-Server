@@ -21,6 +21,8 @@ namespace Client.Networking
 
         }
 
+
+
         public void Connect(IPEndPoint ip)
         {
             try
