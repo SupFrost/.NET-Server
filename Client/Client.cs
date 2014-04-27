@@ -8,12 +8,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Client.Networking;
 
 namespace Client
 {
     public partial class Client : Form
     {
-        private Networking.Client _s;
+        private Networking.ClientSide _s;
         public Client()
         {
             InitializeComponent();
@@ -21,13 +22,14 @@ namespace Client
 
         private void Client_Load(object sender, EventArgs e)
         {
-            _s = new Networking.Client();
+            _s = new Networking.ClientSide();
             _s.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
         }
   
         private void btnSend_Click(object sender, EventArgs e)
         {
-     _s.Send(new byte[1]);
+            _s.ClientSend(Sender.SendGuid(new Guid()));
+   
         }
     }
 }

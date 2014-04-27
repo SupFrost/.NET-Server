@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
-
-namespace Server.Networking.Classes
+namespace Client.Networking
 {
     class PacketWriter : BinaryWriter
 

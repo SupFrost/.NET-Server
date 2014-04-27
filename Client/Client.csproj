@@ -53,6 +53,7 @@
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\Headers.cs" />
     <Compile Include="Networking\PacketIO.cs" />
+    <Compile Include="Networking\Receiver.cs" />
     <Compile Include="Networking\Sender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

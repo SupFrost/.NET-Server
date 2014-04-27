@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Networking\Classes\Headers.cs" />
     <Compile Include="Networking\Classes\PacketIO.cs" />
+    <Compile Include="Networking\Classes\Receiver.cs" />
     <Compile Include="Networking\Classes\Sender.cs" />
     <Compile Include="Networking\Server.cs" />
     <Compile Include="Networking\Classes\Client.cs" />

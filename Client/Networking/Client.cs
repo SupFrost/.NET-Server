@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace Client.Networking
 {
-    class Client
+    class ClientSide
     {
         private Socket _clientSocket;
         private byte[] _buffer;
-        public Client()
+        public ClientSide()
         {
             _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -25,7 +25,7 @@ namespace Client.Networking
             try
             {
                 _clientSocket.BeginConnect(ip, ConnectCallback, null);
-                
+
 
             }
             catch (Exception ex)
@@ -48,27 +48,32 @@ namespace Client.Networking
         {
             int length = BitConverter.ToInt32(_buffer, 0);
             int received = 0;
-            
 
-             while (received < length)
-             {
-                 if (length < _clientSocket.ReceiveBufferSize)
-                 {
-                     _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
-                 }
-                 else{_clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None);}
-                 }
 
-            // Handle _buffer with class.
-           
+            while (received < length)
+            {
+                if (length < _clientSocket.ReceiveBufferSize)
+                {
+                    _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
+                    }
+                else { _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None); }
+
+                received = _buffer.Length;
+            }
+
+            Receiver receiver = new Receiver(_buffer);
+            receiver.HandlePacket();
+
+            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
         }
-          
 
-        public void Send(byte[] data)
+
+        public void ClientSend(byte[] data)
         {
             try
             {
-                _clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
+                byte[] dataLength = BitConverter.GetBytes(data.Length);
+                _clientSocket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, data);
             }
             catch (Exception ex)
             {
@@ -80,11 +85,21 @@ namespace Client.Networking
 
         void SendCallback(IAsyncResult AR)
         {
-            _clientSocket.EndSend(AR);
+            try
+            {
+                byte[] data = (byte[])AR.AsyncState;
+                _clientSocket.Send(data, 0, data.Length, SocketFlags.None);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+
 
         }
 
-        public void 
+
 
     }
 }

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Server.Networking.Classes
+﻿namespace Client.Networking
 {
     public enum MainHeaders : ushort
     {
-        Initial
+        Initial,
+        Text
     }
 
     public enum InitialHeaders : ushort

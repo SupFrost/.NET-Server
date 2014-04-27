@@ -49,8 +49,7 @@ namespace Server.Networking
 
 
                 _buffer = new byte[client.Socket.ReceiveBufferSize];
-                client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None,
-                    new AsyncCallback(ReceiveCallback), client);
+                client.Socket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None,ReceiveCallback, client);
 
                 _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
             }
@@ -78,17 +77,35 @@ namespace Server.Networking
                 _lstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
 
 
-                int BytesReceived = client.Socket.EndReceive(AR);
+                int PacketLength = BitConverter.ToInt32(_buffer,0);
+                Array.Clear(_buffer,0,_buffer.Length);
 
-                //Handle packet
+                int received = 0;
+
+                while (received < PacketLength)
+                {
+                    if (PacketLength < client.Socket.ReceiveBufferSize)
+                    {
+                        client.Socket.Receive(_buffer, received, PacketLength, SocketFlags.None);
+                    }
+                    else { client.Socket.Receive(_buffer, received, client.Socket.ReceiveBufferSize, SocketFlags.None); }
+
+                    received = _buffer.Length;
+                }
+
+                //Handling the packet!
+                Receiver receiver = new Receiver(client, _buffer);
+                receiver.HandlePacket();
+               
+
+               
 
                 Console.WriteLine(client.LastPacketReceived);
 
 
 
                 //Start receiving again!
-                client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None,
-                    new AsyncCallback(ReceiveCallback), client);
+                client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None,ReceiveCallback, client);
             }
             catch (Exception ex)
             {
@@ -102,7 +119,7 @@ namespace Server.Networking
             }
         }
 
-        public static void ServerSend(Client client, byte[] data)
+         public static void ServerSend(Client client, byte[] data)
         {
             try
             {

@@ -1,13 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using Client.Networking;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Server.Networking;
 
-namespace Client.Networking
+namespace Server.Networking.Classes
 {
-    public class Sender
+    class Sender
     {
+        private Client _client;
+        public Sender(Client client)
+        {
+            _client = client;
+        }
 
-       public static byte[] SendGuid(Guid guid)
+        public void SendGuid(Guid guid)
         {
             PacketWriter pw = new PacketWriter();
 
@@ -24,7 +33,7 @@ namespace Client.Networking
                 ms.Write(lengthBytes, 0, lengthBytes.Length);
                 ms.Write(data, 0, data.Length);
 
-                return ms.ToArray();
+                Server.ServerSend(_client, ms.ToArray());
             }
 
 
