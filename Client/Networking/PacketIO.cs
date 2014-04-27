@@ -1,33 +1,32 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.IO;
+using System.Drawing;
+using System.Windows.Forms.Layout;
+
 
 namespace Client.Networking
 {
     class PacketWriter
-
     {
         private MemoryStream _ms;
 
         public PacketWriter()
         {
             _ms = new MemoryStream();
-           
         }
 
-        public byte[] GetBytes()
-        {
-           _ms.Close();
-            byte[] data = _ms.ToArray();
-            return data;
-        }
+        #region standard writes
 
         public void Write(int integer)
         {
             byte[] data = BitConverter.GetBytes(integer);
-            _ms.Write(data,0,data.Length);
-            }
+            _ms.Write(data, 0, data.Length);
+        }
 
         public void Write(ushort value)
         {
@@ -38,9 +37,24 @@ namespace Client.Networking
         public void Write(byte[] data)
         {
             _ms.Write(data, 0, data.Length);
-
         }
 
+        public void Write(Boolean value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            _ms.Write(data, 0, data.Length);
+        }
+
+        public void Write(double value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            _ms.Write(data, 0, data.Length);
+        }
+
+
+        #endregion
+
+        #region non-standard writes
         public void Write(Image image)
         {
             MemoryStream ms = new MemoryStream();
@@ -51,36 +65,46 @@ namespace Client.Networking
             Write(imageBytes.Length);
             Write(imageBytes);
         }
+        public void Write(String value)
+        {
+            byte[] data = Encoding.ASCII.GetBytes(value);
 
+            Write(data.Length);
+            Write(data);
+
+        }
         public void Write(Guid guid)
         {
-            MemoryStream ms = new MemoryStream();
             byte[] data = guid.ToByteArray();
-            ms.Write(data, 0, data.Length);
 
-            ms.Close();
-
-            byte[] buffer = ms.ToArray();
-            Write(buffer.Length);
-            Write(buffer);
-            }
+            Write(data.Length);
+            Write(data);
+        }
+        #endregion
 
 
+        public byte[] GetBytes()
+        {
+            _ms.Close();
+            byte[] data = _ms.ToArray();
+            return data;
+        }
     }
-
-    public class PacketReader 
+    public class PacketReader
     {
         private MemoryStream _ms;
         public PacketReader(byte[] data)
         {
             _ms = new MemoryStream(data);
-            
+
+
         }
 
+        #region Standard Reads
         public Int32 ReadInt32()
         {
             byte[] data = new byte[sizeof(Int32)];
-            _ms.Read(data, 0, sizeof (Int32));
+            _ms.Read(data, 0, sizeof(Int32));
 
             return BitConverter.ToInt32(data, 0);
         }
@@ -88,18 +112,49 @@ namespace Client.Networking
         public ushort ReadUshort()
         {
             byte[] data = new byte[sizeof(ushort)];
-            _ms.Read(data, 0, sizeof (ushort));
+            _ms.Read(data, 0, sizeof(ushort));
 
             return BitConverter.ToUInt16(data, 0);
         }
 
-        public byte[] ReadBytes(int Length)
+        public String ReadString(int length)
         {
-            byte[] data = new byte[Length];
-            _ms.Read(data, 0, Length);
-            return data;
+            byte[] data = new byte[length];
+            _ms.Read(data, 0, length);
+
+            String value = BitConverter.ToString(data);
+
+            return value;
         }
 
+        public Boolean ReadBoolean()
+        {
+            byte[] data = new byte[sizeof(Boolean)];
+            _ms.Read(data, 0, sizeof(Boolean));
+
+            Boolean value = BitConverter.ToBoolean(data, 0);
+            return value;
+        }
+
+        public Double ReadDouble()
+        {
+            byte[] data = new byte[sizeof(Double)];
+            _ms.Read(data, 0, sizeof(Double));
+
+            Double value = BitConverter.ToDouble(data, 0);
+            return value;
+        }
+
+        #endregion
+
+
+
+        public byte[] ReadBytes(int length)
+        {
+            byte[] data = new byte[length];
+            _ms.Read(data, 0, length);
+            return data;
+        }
 
         public Guid ReadGuid()
         {

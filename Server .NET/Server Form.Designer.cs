@@ -28,24 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lbStatus = new System.Windows.Forms.ListBox();
+            this.lvClients = new System.Windows.Forms.ListView();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // lbStatus
+            // lvClients
             // 
-            this.lbStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbStatus.FormattingEnabled = true;
-            this.lbStatus.Location = new System.Drawing.Point(0, 0);
-            this.lbStatus.Name = "lbStatus";
-            this.lbStatus.Size = new System.Drawing.Size(416, 385);
-            this.lbStatus.TabIndex = 0;
+            this.lvClients.Location = new System.Drawing.Point(12, 12);
+            this.lvClients.Name = "lvClients";
+            this.lvClients.Size = new System.Drawing.Size(392, 172);
+            this.lvClients.TabIndex = 0;
+            this.lvClients.UseCompatibleStateImageBehavior = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(59, 206);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ServerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(416, 385);
-            this.Controls.Add(this.lbStatus);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.lvClients);
             this.Name = "ServerForm";
             this.Text = "Server Form";
             this.Load += new System.EventHandler(this.ServerForm_Load);
@@ -55,7 +66,11 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox lbStatus;
+        internal System.Windows.Forms.ListView lvClients;
+        private System.Windows.Forms.Button button1;
+
+
+
     }
 }
 

@@ -13,6 +13,8 @@ namespace Server
 {
     public partial class ServerForm : Form
     {
+        private Server.Networking.Server _server;
+    
 
         public ServerForm()
         {
@@ -21,10 +23,34 @@ namespace Server
 
         private void ServerForm_Load(object sender, EventArgs e)
         {
-        
-            Server.Networking.Server.Start();
-            
 
+           _server = new Networking.Server();
+           _server.Start();
+
+            _server.Connected += UpdateClients;
+            
+        }
+        [STAThread]
+        private void UpdateClients(Client client)
+        {
+    ListViewItem lvi = new ListViewItem();
+            lvi.SubItems.Add(client.Guid.ToString());
+            lvi.SubItems.Add(client.ConnectionDateTime.ToString());
+
+           // lvClients.Items.Add(lvi);
+            {
+                
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            lvClients.Items.Clear();
+            foreach(KeyValuePair<Guid,Client> pair in Networking.Server.LstClients)
+            {
+                lvClients.Items.Add(pair.Key.ToString());
+
+            }
         }
     }
 }

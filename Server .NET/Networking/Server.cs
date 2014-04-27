@@ -13,16 +13,19 @@ using Server.Networking.Classes;
 
 namespace Server.Networking
 {
-     public static class Server
+    public class Server
     {
-        private static Socket _serverSocket;
-        private static byte[] _buffer;
-        private static Dictionary<Guid, Client> _lstClients;
+ public  event ClientConnected Connected;
+        public delegate void ClientConnected(Client client);
+        private  Socket _serverSocket;
+        private  byte[] _buffer;
+        public  static Dictionary<Guid, Client> LstClients;
 
-        public static void Start()
+        public  void Start()
         {
+            
 
-            _lstClients = new Dictionary<Guid, Client>();
+            LstClients = new Dictionary<Guid, Client>();
 
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 33533));
@@ -31,7 +34,7 @@ namespace Server.Networking
 
         }
 
-        private static void AcceptCallback(IAsyncResult AR)
+        private  void AcceptCallback(IAsyncResult AR)
         {
             Client client = new Client();
             try
@@ -46,12 +49,16 @@ namespace Server.Networking
 
                 Console.WriteLine("Client connected : " + client.Guid);
 
-                lock (_lstClients)
-                    _lstClients.Add(client.Guid, client);
+                lock (LstClients)
+                    LstClients.Add(client.Guid, client);
 
+                if (Connected != null)
+                {
+                  Connected(client);
+                }
 
                 _buffer = new byte[client.Socket.ReceiveBufferSize];
-                client.Socket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None,ReceiveCallback, client);
+                client.Socket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, client);
 
                 _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
             }
@@ -61,14 +68,14 @@ namespace Server.Networking
                 if (client.Socket != null)
                 {
                     client.Socket.Close();
-                    lock (_lstClients)
-                        _lstClients.Remove(client.Guid);
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
                 }
             }
 
         }
 
-        private static void ReceiveCallback(IAsyncResult AR)
+        private  void ReceiveCallback(IAsyncResult AR)
         {
             Client client = new Client();
             try
@@ -76,10 +83,10 @@ namespace Server.Networking
                 client = (Client)AR.AsyncState;
 
                 //update Client
-                _lstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
+                LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
 
 
-                int PacketLength = BitConverter.ToInt32(_buffer,0);
+                int PacketLength = BitConverter.ToInt32(_buffer, 0);
                 _buffer = new byte[PacketLength];
 
                 int received = 0;
@@ -98,14 +105,14 @@ namespace Server.Networking
                 //Handling the packet!
                 Receiver receiver = new Receiver(client, _buffer);
                 receiver.HandlePacket();
-               
 
-               Console.WriteLine(client.LastPacketReceived);
+
+                Console.WriteLine(client.LastPacketReceived);
 
 
 
                 //Start receiving again!
-                client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None,ReceiveCallback, client);
+                client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceiveCallback, client);
             }
             catch (Exception ex)
             {
@@ -113,13 +120,13 @@ namespace Server.Networking
                 if (client.Socket != null)
                 {
                     client.Socket.Close();
-                    lock (_lstClients)
-                        _lstClients.Remove(client.Guid);
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
                 }
             }
         }
 
-         public static void ServerSend(Client client, byte[] data)
+        public static void ServerSend(Client client, byte[] data)
         {
             try
             {
@@ -133,13 +140,13 @@ namespace Server.Networking
                 MessageBox.Show(socketException.ErrorCode.ToString());
             }
 
-       
+
 
         }
 
         private static void SendCallback(IAsyncResult AR)
         {
-            Client client = (Client) AR.AsyncState;
+            Client client = (Client)AR.AsyncState;
             byte[] data = client.Data;
 
             client.Socket.Send(data, data.Length, SocketFlags.None);
