@@ -13,17 +13,19 @@ namespace Client.Networking
     class Client
     {
         private Socket _clientSocket;
+        private byte[] _buffer;
         public Client()
         {
             _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         }
 
-        public void Connect(IPEndPoint IP)
+        public void Connect(IPEndPoint ip)
         {
             try
             {
-                _clientSocket.BeginConnect(IP, new AsyncCallback(ConnectCallback), null);
+                _clientSocket.BeginConnect(ip, ConnectCallback, null);
+                
 
             }
             catch (Exception ex)
@@ -35,16 +37,38 @@ namespace Client.Networking
         void ConnectCallback(IAsyncResult AR)
         {
             _clientSocket.EndConnect(AR);
+            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+
 
             //Initilize Connection
 
         }
 
+        void ReceiveCallback(IAsyncResult AR)
+        {
+            int length = BitConverter.ToInt32(_buffer, 0);
+            int received = 0;
+            
+
+             while (received < length)
+             {
+                 if (length < _clientSocket.ReceiveBufferSize)
+                 {
+                     _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
+                 }
+                 else{_clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None);}
+                 }
+
+            // Handle _buffer with class.
+           
+        }
+          
+
         public void Send(byte[] data)
         {
             try
             {
-                _clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                _clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
             }
             catch (Exception ex)
             {
@@ -59,6 +83,8 @@ namespace Client.Networking
             _clientSocket.EndSend(AR);
 
         }
+
+        public void 
 
     }
 }

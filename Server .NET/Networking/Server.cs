@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Linq;
 using System.Net.Configuration;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
@@ -12,13 +13,13 @@ using Server.Networking.Classes;
 
 namespace Server.Networking
 {
-    internal class Server
+     public static class Server
     {
-        private Socket _serverSocket;
-        private byte[] _buffer;
-        private Dictionary<Guid, Client> _lstClients;
+        private static Socket _serverSocket;
+        private static byte[] _buffer;
+        private static Dictionary<Guid, Client> _lstClients;
 
-        public Server()
+        public static void Start()
         {
 
             _lstClients = new Dictionary<Guid, Client>();
@@ -26,11 +27,11 @@ namespace Server.Networking
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 33533));
             _serverSocket.Listen(1);
-            _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), _serverSocket);
+            _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
 
         }
 
-        private void AcceptCallback(IAsyncResult AR)
+        private static void AcceptCallback(IAsyncResult AR)
         {
             Client client = new Client();
             try
@@ -51,7 +52,7 @@ namespace Server.Networking
                 client.Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None,
                     new AsyncCallback(ReceiveCallback), client);
 
-                _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), _serverSocket);
+                _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
             }
             catch (Exception ex)
             {
@@ -66,7 +67,7 @@ namespace Server.Networking
 
         }
 
-        private void ReceiveCallback(IAsyncResult AR)
+        private static void ReceiveCallback(IAsyncResult AR)
         {
             Client client = new Client();
             try
@@ -100,5 +101,34 @@ namespace Server.Networking
                 }
             }
         }
+
+        public static void ServerSend(Client client, byte[] data)
+        {
+            try
+            {
+                byte[] dataLength = BitConverter.GetBytes(data.Length);
+                client.Data = data;
+
+                client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
+            }
+            catch (SocketException socketException)
+            {
+                MessageBox.Show(socketException.ErrorCode.ToString());
+            }
+
+       
+
+        }
+
+        private static void SendCallback(IAsyncResult AR)
+        {
+            Client client = (Client) AR.AsyncState;
+            byte[] data = client.Data;
+
+            client.Socket.Send(data, data.Length, SocketFlags.None);
+
+        }
+
+
     }
 }

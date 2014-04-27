@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Server.Networking.Classes;
 
 namespace Server
 {
     public partial class ServerForm : Form
     {
-        private Networking.Server _server;
+
         public ServerForm()
         {
             InitializeComponent();
@@ -20,7 +21,10 @@ namespace Server
 
         private void ServerForm_Load(object sender, EventArgs e)
         {
-            _server = new Networking.Server();
+        
+            Server.Networking.Server.Start();
+            
+
         }
     }
 }
