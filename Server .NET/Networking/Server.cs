@@ -80,7 +80,7 @@ namespace Server.Networking
 
 
                 int PacketLength = BitConverter.ToInt32(_buffer,0);
-                Array.Clear(_buffer,0,_buffer.Length);
+                _buffer = new byte[PacketLength];
 
                 int received = 0;
 

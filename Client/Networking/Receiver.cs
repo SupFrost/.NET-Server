@@ -17,11 +17,11 @@ namespace Client.Networking
         public void HandlePacket()
         {
             
-            MainHeaders mainHeader = (MainHeaders)pr.ReadInt16();
+            MainHeaders mainHeader = (MainHeaders)pr.ReadUshort();
             switch (mainHeader)
             {
                 case MainHeaders.Initial:
-                    InitialHeaders initialHeader = (InitialHeaders)pr.ReadInt16();
+                    InitialHeaders initialHeader = (InitialHeaders)pr.ReadUshort();
                     switch (initialHeader)
                     {
                         case InitialHeaders.Guid:

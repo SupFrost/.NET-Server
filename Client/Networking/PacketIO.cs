@@ -29,6 +29,12 @@ namespace Client.Networking
             _ms.Write(data,0,data.Length);
             }
 
+        public void Write(ushort value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            _ms.Write(data, 0, data.Length);
+        }
+
         public void Write(byte[] data)
         {
             _ms.Write(data, 0, data.Length);
@@ -62,14 +68,38 @@ namespace Client.Networking
 
     }
 
-    public class PacketReader : BinaryReader
+    public class PacketReader 
     {
-        public PacketReader(byte[] data) : base(new MemoryStream(data))
+        private MemoryStream _ms;
+        public PacketReader(byte[] data)
         {
-
-
-
+            _ms = new MemoryStream(data);
+            
         }
+
+        public Int32 ReadInt32()
+        {
+            byte[] data = new byte[sizeof(Int32)];
+            _ms.Read(data, 0, sizeof (Int32));
+
+            return BitConverter.ToInt32(data, 0);
+        }
+
+        public ushort ReadUshort()
+        {
+            byte[] data = new byte[sizeof(ushort)];
+            _ms.Read(data, 0, sizeof (ushort));
+
+            return BitConverter.ToUInt16(data, 0);
+        }
+
+        public byte[] ReadBytes(int Length)
+        {
+            byte[] data = new byte[Length];
+            _ms.Read(data, 0, Length);
+            return data;
+        }
+
 
         public Guid ReadGuid()
         {
