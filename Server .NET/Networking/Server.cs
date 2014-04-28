@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using Server.Networking.Classes;
+using Server.Networking.Packets;
 
 namespace Server.Networking
 {

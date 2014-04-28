@@ -11,6 +11,7 @@
     <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,7 +24,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -59,12 +59,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Networking\Classes\Headers.cs" />
-    <Compile Include="Networking\Classes\PacketIO.cs" />
-    <Compile Include="Networking\Classes\Receiver.cs" />
-    <Compile Include="Networking\Classes\Sender.cs" />
+    <Compile Include="Networking\Packets\Headers.cs" />
+    <Compile Include="Networking\Packets\PacketIO.cs" />
+    <Compile Include="Networking\Packets\Receiver.cs" />
+    <Compile Include="Networking\Packets\Sender.cs" />
     <Compile Include="Networking\Server.cs" />
-    <Compile Include="Networking\Classes\Client.cs" />
+    <Compile Include="Networking\Client.cs" />
     <Compile Include="Server Form.cs">
       <SubType>Form</SubType>
     </Compile>

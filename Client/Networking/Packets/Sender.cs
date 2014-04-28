@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Client.Networking
+namespace Client.Networking.Packets
 {
     public class Sender
     {

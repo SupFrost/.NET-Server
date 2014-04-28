@@ -52,10 +52,10 @@
     </Compile>
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\Global.cs" />
-    <Compile Include="Networking\Headers.cs" />
-    <Compile Include="Networking\PacketIO.cs" />
-    <Compile Include="Networking\Receiver.cs" />
-    <Compile Include="Networking\Sender.cs" />
+    <Compile Include="Networking\Packets\Headers.cs" />
+    <Compile Include="Networking\Packets\PacketIO.cs" />
+    <Compile Include="Networking\Packets\Receiver.cs" />
+    <Compile Include="Networking\Packets\Sender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Client.resx">

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Drawing;
-using System.Windows.Forms.Layout;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Text;
 
-
-namespace Server.Networking.Classes
+namespace Server.Networking.Packets
 {
     class PacketWriter
     {

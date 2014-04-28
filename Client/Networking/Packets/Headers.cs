@@ -1,4 +1,4 @@
-﻿namespace Client.Networking
+﻿namespace Client.Networking.Packets
 {
     public enum IoHeader : ushort
     {
