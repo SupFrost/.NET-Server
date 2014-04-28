@@ -4,8 +4,8 @@ namespace Server.Networking.Packets
 {
     public class Receiver
     {
-        private Client _client;
-        private PacketReader _pr;
+        private readonly Client _client;
+        private readonly PacketReader _pr;
         private Sender _sender;
 
         public Receiver(Client client, byte[] data)
@@ -18,11 +18,11 @@ namespace Server.Networking.Packets
 
         public void HandlePacket()
         {
-            IoHeader iOHeader = (IoHeader)_pr.ReadUshort();
+            var iOHeader = (IoHeader)_pr.ReadUshort();
             switch (iOHeader)
             {
                 case IoHeader.Request:
-                    StandardHeader standardHeader = (StandardHeader)_pr.ReadUshort();
+                    var standardHeader = (StandardHeader)_pr.ReadUshort();
                     switch (standardHeader)
                     {
                         case StandardHeader.Guid:

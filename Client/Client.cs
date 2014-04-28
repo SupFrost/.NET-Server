@@ -25,7 +25,7 @@ namespace Client
 
         private void Client_Load(object sender, EventArgs e)
         {
-
+_client = new ClientSide();
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -38,8 +38,9 @@ namespace Client
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            _client = new ClientSide();
-            _client.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
+            
+            if (!_client.Connect(new IPEndPoint(IPAddress.Loopback, 33533)))
+                return;
 
 
             //Request GUID from server
@@ -59,7 +60,13 @@ namespace Client
             _client.ClientSend(_sender.RequestPing());
 
             //Update the controls!
-            lblPing.Text = Global.Ping.ToString(CultureInfo.InvariantCulture);
+            if (Global.Ping == 0 )
+            { lblPing.Text = @"< 1 ms";}
+            else
+            {
+                lblPing.Text = Global.Ping.ToString(CultureInfo.InvariantCulture);
+            }
+            
             lblGUID.Text = Global.Guid.ToString();
 
         }

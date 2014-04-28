@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Client.Networking.Packets;
 
 namespace Client.Networking
@@ -15,23 +16,23 @@ namespace Client.Networking
         {
             _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _buffer = new byte[_clientSocket.ReceiveBufferSize];
-
         }
 
-
-
-        public void Connect(IPEndPoint ip)
+        public Boolean Connect(IPEndPoint ip)
         {
             try
             {
+                if (Global.Connected)
+                    return false;
+
                 _clientSocket.BeginConnect(ip, ConnectCallback, null);
-
-
+                return true;
             }
             catch (Exception ex)
             {
                 Global.Connected = false;
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
@@ -41,41 +42,39 @@ namespace Client.Networking
             _clientSocket.EndConnect(AR);
             _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
 
-
             //Initilize Connection
-
         }
 
         void ReceiveCallback(IAsyncResult AR)
         {
             try
             {
-  int length = BitConverter.ToInt32(_buffer, 0);
-            int received = 0;
+                int length = BitConverter.ToInt32(_buffer, 0);
+                int received = 0;
 
 
-            while (received < length)
-            {
-                if (length < _clientSocket.ReceiveBufferSize)
+                while (received < length)
                 {
-                    _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
+                    if (length < _clientSocket.ReceiveBufferSize)
+                    {
+                        _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
+                    }
+                    else { _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None); }
+
+                    received = _buffer.Length;
                 }
-                else { _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None); }
 
-                received = _buffer.Length;
-            }
+                Receiver receiver = new Receiver(_buffer);
+                receiver.HandlePacket();
 
-            Receiver receiver = new Receiver(_buffer);
-            receiver.HandlePacket();
-
-            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+                _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
             }
             catch (SocketException socketException)
-                {
-                    MessageBox.Show(socketException.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            {
+                MessageBox.Show(socketException.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
-          
+
         }
 
 
