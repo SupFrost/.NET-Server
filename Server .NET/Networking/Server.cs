@@ -28,7 +28,7 @@ namespace Server.Networking
 
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 33533));
-            _serverSocket.Listen(1);
+            _serverSocket.Listen(1000);
             _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
 
         }
@@ -36,8 +36,8 @@ namespace Server.Networking
         private void AcceptCallback(IAsyncResult AR)
         {
             Client client = null;
-            try
-            {
+            //try
+            //{
                 Socket s = _serverSocket.EndAccept(AR);
 
                 //Add to Client list
@@ -55,32 +55,35 @@ namespace Server.Networking
                 _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
                 client.Socket.BeginReceive(client.Buffer, 0, sizeof (int), SocketFlags.None, ReceiveCallback, client);
 
-                }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if (client.Socket != null)
-                {
-                    client.Socket.Close();
-                    lock (LstClients)
-                        LstClients.Remove(client.Guid);
-                }
-            }
+                //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    if (client.Socket != null)
+            //    {
+            //        client.Socket.Close();
+            //        lock (LstClients)
+            //            LstClients.Remove(client.Guid);
+            //    }
+            //}
 
         }
 
         private void ReceiveCallback(IAsyncResult AR)
         {
             Client client = null;
-            try
-            {
+            //try
+            //{
                 client = (Client) AR.AsyncState;
 
                 //update Client
                 LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
+            if (client.Buffer.Length == 0)
+            {
+                return;
+            }
 
-
-                int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
+            int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
                 client.Buffer = new byte[PacketLength];
 
                 int received = 0;
@@ -110,33 +113,33 @@ namespace Server.Networking
 
                 //Start receiving again!
                 client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback,client);
-            }
+            //}
 
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if (client.Socket != null)
-                {
-                    client.Socket.Close();
-                    lock (LstClients)
-                        LstClients.Remove(client.Guid);
-                }
-            }
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    if (client.Socket != null)
+            //    {
+            //        client.Socket.Close();
+            //        lock (LstClients)
+            //            LstClients.Remove(client.Guid);
+            //    }
+            //}
         }
 
         public static void ServerSend(Client client, byte[] data)
         {
-            try
-            {
+            //try
+            //{
                 byte[] dataLength = BitConverter.GetBytes(data.Length);
                 client.Data = data;
 
                 client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
-            }
-            catch (SocketException socketException)
-            {
-                MessageBox.Show(socketException.ErrorCode.ToString());
-            }
+            //}
+            //catch (SocketException socketException)
+            //{
+            //    MessageBox.Show(socketException.ErrorCode.ToString());
+            //}
 
 
 
@@ -146,8 +149,9 @@ namespace Server.Networking
         {
             Client client = (Client)AR.AsyncState;
             byte[] data = client.Data;
-
-            client.Socket.Send(data, data.Length, SocketFlags.None);
+         
+     client.Socket.Send(data, data.Length, SocketFlags.None);
+   
 
         }
 
