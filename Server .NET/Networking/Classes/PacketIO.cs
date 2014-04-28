@@ -44,8 +44,6 @@ namespace Server.Networking.Classes
             _ms.Write(data, 0, data.Length);
         }
 
-
-
         public void Write(Boolean value)
         {
             byte[] data = BitConverter.GetBytes(value);
@@ -117,14 +115,31 @@ namespace Server.Networking.Classes
             return BitConverter.ToUInt16(data, 0);
         }
 
-        public string ReadString(int length)
+        public String ReadString(int length)
         {
             byte[] data = new byte[length];
             _ms.Read(data, 0, length);
 
             String value = BitConverter.ToString(data);
 
+          return value;
+        }
 
+        public Boolean ReadBoolean()
+        {
+            byte[] data = new byte[sizeof(Boolean)];
+            _ms.Read(data, 0, sizeof(Boolean));
+
+            Boolean value = BitConverter.ToBoolean(data,0);
+            return value;
+        }
+
+        public Double ReadDouble()
+        {
+            byte[] data = new byte[sizeof(Double)];
+            _ms.Read(data, 0, sizeof(Double));
+
+            Double value = BitConverter.ToDouble(data, 0);
             return value;
         }
 
