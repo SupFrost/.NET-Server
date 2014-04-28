@@ -34,12 +34,14 @@ namespace Client.Networking
             }
             catch (Exception ex)
             {
+                Global.Connected = false;
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         void ConnectCallback(IAsyncResult AR)
         {
+            Global.Connected = true;
             _clientSocket.EndConnect(AR);
             _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
 

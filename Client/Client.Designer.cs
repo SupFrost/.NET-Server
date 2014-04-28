@@ -29,20 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.txtText = new System.Windows.Forms.TextBox();
             this.btnConnect = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPing = new System.Windows.Forms.Label();
             this.tmrPing = new System.Windows.Forms.Timer(this.components);
+            this.label2 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblGUID = new System.Windows.Forms.Label();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // txtText
-            // 
-            this.txtText.Location = new System.Drawing.Point(93, 43);
-            this.txtText.Name = "txtText";
-            this.txtText.Size = new System.Drawing.Size(404, 20);
-            this.txtText.TabIndex = 5;
             // 
             // btnConnect
             // 
@@ -67,7 +63,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(836, 9);
+            this.label1.Location = new System.Drawing.Point(6, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 13);
             this.label1.TabIndex = 6;
@@ -76,7 +72,7 @@
             // lblPing
             // 
             this.lblPing.AutoSize = true;
-            this.lblPing.Location = new System.Drawing.Point(873, 9);
+            this.lblPing.Location = new System.Drawing.Point(43, 26);
             this.lblPing.Name = "lblPing";
             this.lblPing.Size = new System.Drawing.Size(0, 13);
             this.lblPing.TabIndex = 7;
@@ -86,31 +82,62 @@
             this.tmrPing.Interval = 2000;
             this.tmrPing.Tick += new System.EventHandler(this.tmrPing_Tick);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 52);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(37, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "GUID:";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.lblGUID);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.lblPing);
+            this.groupBox1.Location = new System.Drawing.Point(12, 70);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(355, 169);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Info";
+            // 
+            // lblGUID
+            // 
+            this.lblGUID.AutoSize = true;
+            this.lblGUID.Location = new System.Drawing.Point(43, 52);
+            this.lblGUID.Name = "lblGUID";
+            this.lblGUID.Size = new System.Drawing.Size(0, 13);
+            this.lblGUID.TabIndex = 9;
+            // 
             // Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1018, 399);
-            this.Controls.Add(this.lblPing);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.txtText);
+            this.ClientSize = new System.Drawing.Size(522, 268);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.btnSend);
             this.Name = "Client";
             this.Text = "Client";
             this.Load += new System.EventHandler(this.Client_Load);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtText;
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblPing;
         private System.Windows.Forms.Timer tmrPing;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label lblGUID;
     }
 }

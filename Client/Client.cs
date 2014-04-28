@@ -15,7 +15,7 @@ namespace Client
 {
     public partial class Client : Form
     {
-        private Networking.ClientSide _client;
+        private ClientSide _client;
         private Sender _sender;
         public Client()
         {
@@ -41,6 +41,11 @@ namespace Client
             _client.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
 
 
+            //Request GUID from server
+            _sender = new Sender();
+            _client.ClientSend(_sender.RequestGuid());
+
+            //Enable ping timer :)
             tmrPing.Enabled = true;
             tmrPing.Start();
             
@@ -52,8 +57,9 @@ namespace Client
             _sender = new Sender();
             _client.ClientSend(_sender.RequestPing());
 
-            //Update the ping label!
+            //Update the controls!
             lblPing.Text = Global.Ping.ToString(CultureInfo.InvariantCulture);
+            lblGUID.Text = Global.Guid.ToString();
 
         }
     }

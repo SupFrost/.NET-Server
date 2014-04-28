@@ -23,8 +23,7 @@ namespace Client.Networking
                     switch (standardHeader)
                     {
                         case StandardHeader.Guid:
-                            Guid guid = _pr.ReadGuid();
-                            Console.WriteLine(guid.ToString());
+                            Global.Guid = _pr.ReadGuid();
                             break;
                         case StandardHeader.Ping:
                         {
