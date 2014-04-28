@@ -15,9 +15,6 @@ namespace Server.Networking
 {
     public class Server
     {
-        public event ClientConnected Connected;
-
-        public delegate void ClientConnected(Client client);
 
         private Socket _serverSocket;
        public static Dictionary<Guid, Client> LstClients;
@@ -38,8 +35,8 @@ namespace Server.Networking
         private void AcceptCallback(IAsyncResult AR)
         {
             Client client = null;
-            //try
-            //{
+            try
+            {
                 Socket s = _serverSocket.EndAccept(AR);
 
                 //Add to Client list
@@ -53,82 +50,78 @@ namespace Server.Networking
                 lock (LstClients)
                     LstClients.Add(client.Guid, client);
 
-                if (Connected != null)
-                {
-                    Connected(client);
-                }
-
                 
                 _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
                 client.Socket.BeginReceive(client.Buffer, 0, sizeof (int), SocketFlags.None, ReceiveCallback, client);
 
-                //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    if (client.Socket != null)
-            //    {
-            //        client.Socket.Close();
-            //        lock (LstClients)
-            //            LstClients.Remove(client.Guid);
-            //    }
-            //}
+                }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (client.Socket != null)
+                {
+                    client.Socket.Close();
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
+                }
+            }
 
         }
 
         private void ReceiveCallback(IAsyncResult AR)
         {
-            Client client;
-            //try
-            //{
-            client = (Client) AR.AsyncState;
-
-            //update Client
-            LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
-
-
-            int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
-           client.Buffer = new byte[PacketLength];
-
-            int received = 0;
-
-            while (received < PacketLength)
+            Client client = null;
+            try
             {
-                if (PacketLength < client.Socket.ReceiveBufferSize)
+                client = (Client) AR.AsyncState;
+
+                //update Client
+                LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
+
+
+                int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
+                client.Buffer = new byte[PacketLength];
+
+                int received = 0;
+
+                while (received < PacketLength)
                 {
-                    client.Socket.Receive(client.Buffer, received, PacketLength, SocketFlags.None);
-                }
-                else
-                {
-                    client.Socket.Receive(client.Buffer, received, client.Socket.ReceiveBufferSize, SocketFlags.None);
+                    if (PacketLength < client.Socket.ReceiveBufferSize)
+                    {
+                        client.Socket.Receive(client.Buffer, received, PacketLength, SocketFlags.None);
+                    }
+                    else
+                    {
+                        client.Socket.Receive(client.Buffer, received, client.Socket.ReceiveBufferSize, SocketFlags.None);
+                    }
+
+                    received = client.Buffer.Length;
                 }
 
-                received = client.Buffer.Length;
+                //Handling the packet!
+                Receiver receiver = new Receiver(client, client.Buffer);
+                receiver.HandlePacket();
+
+
+                Console.WriteLine(client.LastPacketReceived);
+
+
+
+                //Start receiving again!
+                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback,client);
             }
 
-            //Handling the packet!
-            Receiver receiver = new Receiver(client, client.Buffer);
-            receiver.HandlePacket();
-
-
-            Console.WriteLine(client.LastPacketReceived);
-
-
-
-            //Start receiving again!
-            client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback, client);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (client.Socket != null)
+                {
+                    client.Socket.Close();
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
+                }
+            }
         }
-
-        //catch (Exception ex)
-        //{
-        //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    if (client.Socket != null)
-        //    {
-        //        client.Socket.Close();
-        //        lock (LstClients)
-        //            LstClients.Remove(client.Guid);
-        //    }
-        //}
 
         public static void ServerSend(Client client, byte[] data)
         {

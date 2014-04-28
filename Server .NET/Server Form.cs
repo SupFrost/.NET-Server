@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Server.Networking.Classes;
 
@@ -23,29 +17,19 @@ namespace Server
 
         private void ServerForm_Load(object sender, EventArgs e)
         {
-
-           _server = new Networking.Server();
+            _server = new Networking.Server();
            _server.Start();
 
-            _server.Connected += UpdateClients;
+            timer1.Enabled = true;
+            timer1.Interval = 1000;
+            timer1.Start();
             
         }
-        [STAThread]
-        private void UpdateClients(Client client)
+     
+     
+        private void timer1_Tick(object sender, EventArgs e)
         {
-    ListViewItem lvi = new ListViewItem();
-            lvi.SubItems.Add(client.Guid.ToString());
-            lvi.SubItems.Add(client.ConnectionDateTime.ToString());
-
-           // lvClients.Items.Add(lvi);
-            {
-                
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            lvClients.Items.Clear();
+  lvClients.Items.Clear();
             foreach(KeyValuePair<Guid,Client> pair in Networking.Server.LstClients)
             {
                 lvClients.Items.Add(pair.Key.ToString());

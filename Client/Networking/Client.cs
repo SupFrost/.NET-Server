@@ -52,7 +52,9 @@ namespace Client.Networking
 
         void ReceiveCallback(IAsyncResult AR)
         {
-            int length = BitConverter.ToInt32(_buffer, 0);
+            try
+            {
+  int length = BitConverter.ToInt32(_buffer, 0);
             int received = 0;
 
 
@@ -71,6 +73,13 @@ namespace Client.Networking
             receiver.HandlePacket();
 
             _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+            }
+            catch (SocketException socketException)
+                {
+                    MessageBox.Show(socketException.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+          
         }
 
 
