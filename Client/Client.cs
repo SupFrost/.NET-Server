@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -14,7 +15,8 @@ namespace Client
 {
     public partial class Client : Form
     {
-        private Networking.ClientSide _s;
+        private Networking.ClientSide _client;
+        private Sender _sender;
         public Client()
         {
             InitializeComponent();
@@ -22,20 +24,35 @@ namespace Client
 
         private void Client_Load(object sender, EventArgs e)
         {
-           
+
         }
-  
+
         private void btnSend_Click(object sender, EventArgs e)
         {
-            Sender s = new Sender();
-         _s.ClientSend(s.RequestGuid());
+            _sender = new Sender();
+            _client.ClientSend(_sender.RequestGuid());
 
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
- _s = new Networking.ClientSide();
-            _s.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
+            _client = new ClientSide();
+            _client.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
+
+            tmrPing.Enabled = true;
+            tmrPing.Start();
+           
+        }
+
+        private void tmrPing_Tick(object sender, EventArgs e)
+        {
+            //Request new ping time!
+            _sender = new Sender();
+            _client.ClientSend(_sender.RequestPing());
+
+            //Update the ping label!
+            lblPing.Text = Global.Ping.ToString(CultureInfo.InvariantCulture);
+
         }
     }
 }

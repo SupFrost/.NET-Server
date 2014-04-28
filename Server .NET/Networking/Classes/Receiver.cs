@@ -12,41 +12,43 @@ namespace Server.Networking.Classes
     public class Receiver
     {
         private Client _client;
-        private PacketReader pr;
-        
+        private PacketReader _pr;
+        private Sender _sender;
+
         public Receiver(Client client, byte[] data)
-         {
+        {
 
-             _client = client;
-        pr = new PacketReader(data);
+            _client = client;
+            _pr = new PacketReader(data);
 
-         }
+        }
 
         public void HandlePacket()
         {
-
-
-            MainHeaders mainHeader = (MainHeaders) pr.ReadUshort();
-            switch (mainHeader)
+            IoHeader iOHeader = (IoHeader)_pr.ReadUshort();
+            switch (iOHeader)
             {
-                case MainHeaders.Initial:
-                    InitialHeaders initialHeader = (InitialHeaders) pr.ReadUshort();
-                    switch (initialHeader)
+                case IoHeader.Request:
+                    StandardHeader standardHeader = (StandardHeader)_pr.ReadUshort();
+                    switch (standardHeader)
                     {
-                            case InitialHeaders.Guid:
+                        case StandardHeader.Guid:
 
                             // Send Guid back!
-                            Sender s = new Sender(_client);
-                            s.SendGuid(_client.Guid);
+                            _sender = new Sender(_client);
+                            _sender.SendGuid(_client.Guid);
+                            break;
+                        case StandardHeader.Ping:
 
-                           
+                            //send Ping back!
+                            _sender = new Sender(_client);
+                            _sender.SendPing();
                             break;
                     }
                     break;
-                case MainHeaders.Text:
+                case IoHeader.Send:
                     break;
             }
         }
-
     }
 }

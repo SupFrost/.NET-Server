@@ -1,13 +1,14 @@
 ﻿namespace Client.Networking
 {
-    public enum MainHeaders : ushort
+    public enum IoHeader : ushort
     {
-        Initial,
-        Text
+        Request,
+        Send
     }
 
-    public enum InitialHeaders : ushort
+    public enum StandardHeader : ushort
     {
-        Guid
+        Guid,
+        Ping
     }
 }

@@ -51,6 +51,7 @@
       <DependentUpon>Client.cs</DependentUpon>
     </Compile>
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="Networking\Global.cs" />
     <Compile Include="Networking\Headers.cs" />
     <Compile Include="Networking\PacketIO.cs" />
     <Compile Include="Networking\Receiver.cs" />

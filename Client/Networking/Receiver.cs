@@ -8,31 +8,34 @@ namespace Client.Networking
 {
     class Receiver
     {
-    private PacketReader pr;
+    private PacketReader _pr;
+        
         public Receiver( byte[] data)
         {
-            pr = new PacketReader(data);
+            _pr = new PacketReader(data);
             }
 
         public void HandlePacket()
         {
-            
-            MainHeaders mainHeader = (MainHeaders)pr.ReadUshort();
-            switch (mainHeader)
-            {
-                case MainHeaders.Initial:
-                    InitialHeaders initialHeader = (InitialHeaders)pr.ReadUshort();
-                    switch (initialHeader)
+
+            IoHeader ioHeader = (IoHeader)_pr.ReadUshort();
+            StandardHeader standardHeader = (StandardHeader)_pr.ReadUshort();
+                    switch (standardHeader)
                     {
-                        case InitialHeaders.Guid:
-                            Guid guid = pr.ReadGuid();
+                        case StandardHeader.Guid:
+                            Guid guid = _pr.ReadGuid();
                             Console.WriteLine(guid.ToString());
                             break;
+                        case StandardHeader.Ping:
+                        {
+                            if (ioHeader == IoHeader.Send)
+                            {
+                                //Subtracts the PingTime from the current time to get the Ping in ms.
+                                Global.Ping = (ushort)DateTime.UtcNow.AddMilliseconds(5).Subtract(Global.PingTime).Milliseconds;
+                            }
+                            break;
+                        }
                     }
-                    break;
-                case MainHeaders.Text:
-                    break;
-            }
         }
     }
 }

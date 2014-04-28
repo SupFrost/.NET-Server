@@ -19,7 +19,12 @@ namespace Server.Networking.Classes
         {
             _ms = new MemoryStream();
         }
-
+ public byte[] GetBytes()
+        {
+            _ms.Close();
+            byte[] data = _ms.ToArray();
+            return data;
+        }
         #region standard writes
 
         public void Write(int integer)
@@ -85,12 +90,7 @@ namespace Server.Networking.Classes
         #endregion
 
 
-        public byte[] GetBytes()
-        {
-            _ms.Close();
-            byte[] data = _ms.ToArray();
-            return data;
-        }
+       
     }
     public class PacketReader
     {
@@ -98,8 +98,6 @@ namespace Server.Networking.Classes
         public PacketReader(byte[] data)
         {
             _ms = new MemoryStream(data);
-
-
         }
 
         #region Standard Reads
@@ -131,10 +129,8 @@ namespace Server.Networking.Classes
         }
 
         #endregion
-
-
-
-        public byte[] ReadBytes(int length)
+        #region Non-standard Reads
+ public byte[] ReadBytes(int length)
         {
             byte[] data = new byte[length];
             _ms.Read(data, 0, length);
@@ -162,7 +158,9 @@ namespace Server.Networking.Classes
             }
             return img;
         }
+
+        #endregion
+     
     }
 
-
-}
+    }

@@ -14,6 +14,7 @@ namespace Client.Networking
     {
         private Socket _clientSocket;
         private  byte[] _buffer;
+
         public ClientSide()
         {
             _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

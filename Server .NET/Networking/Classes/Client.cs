@@ -14,16 +14,13 @@ namespace Server.Networking.Classes
         public Guid Guid { get; set; }
         public DateTime LastPacketReceived { get; set; }
         public byte[] Data { get; set; }
+        public TimeSpan Ping { get; set; }
 
 
         public Client()
         {
-
+           
         }
-
-
-
-
 
     }
 }

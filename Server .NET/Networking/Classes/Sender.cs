@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Server.Networking;
 
 namespace Server.Networking.Classes
 {
     public class Sender
     {
-        private Client _client;
+        private readonly Client _client;
+        private PacketWriter _pw;
         public Sender(Client client)
         {
             _client = client;
@@ -18,23 +14,35 @@ namespace Server.Networking.Classes
 
         public void SendGuid(Guid guid)
         {
-            PacketWriter pw = new PacketWriter();
+            _pw = new PacketWriter();
 
-            pw.Write((ushort)MainHeaders.Initial);
-            pw.Write((ushort)InitialHeaders.Guid);
-            pw.Write(guid);
+            _pw.Write((ushort)IoHeader.Send);
+            _pw.Write((ushort)StandardHeader.Guid);
+            _pw.Write(guid);
 
-            byte[] data = pw.GetBytes();
-            int length = data.Length;
+            byte[] data = _pw.GetBytes();
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 ms.Write(data, 0, data.Length);
-
                 Server.ServerSend(_client, ms.ToArray());
             }
-
-
         }
+        public void SendPing()
+        {
+            _pw = new PacketWriter();
+
+            _pw.Write((ushort) IoHeader.Send);
+            _pw.Write((ushort) StandardHeader.Ping);
+
+            byte[] data = _pw.GetBytes();
+
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(data, 0, data.Length);
+                Server.ServerSend(_client,ms.ToArray());
+            }
+        }
+     
     }
 }

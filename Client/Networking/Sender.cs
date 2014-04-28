@@ -5,23 +5,44 @@ namespace Client.Networking
 {
     public class Sender
     {
+        private PacketWriter _pw;
+
+        public Sender()
+        {
+            _pw = new PacketWriter();
+        }
+
         public  byte[] RequestGuid()
         {
-            PacketWriter pw = new PacketWriter();
+            _pw.Write((ushort)IoHeader.Request);
+            _pw.Write((ushort)StandardHeader.Guid);
 
-            pw.Write((ushort)MainHeaders.Initial);
-            pw.Write((ushort)InitialHeaders.Guid);
-           
-            byte[] data = pw.GetBytes();
-            int length = data.Length;
+            byte[] data = _pw.GetBytes();
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 ms.Write(data, 0, data.Length);
                 return ms.ToArray();
             }
+           }
+        public byte[] RequestPing()
+        {
+            _pw = new PacketWriter();
 
+            _pw.Write((ushort)IoHeader.Request);
+            _pw.Write((ushort)StandardHeader.Ping);
 
+            byte[] data = _pw.GetBytes();
+
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(data, 0, data.Length);
+
+                Global.PingTime = DateTime.UtcNow;
+                return ms.ToArray();
+            }
+
+            
         }
     }
 }
