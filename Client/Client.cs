@@ -30,6 +30,7 @@ namespace Client
         private void btnSend_Click(object sender, EventArgs e)
         {
             _sender = new Sender();
+
             _client.ClientSend(_sender.RequestGuid());
 
         }
@@ -39,9 +40,10 @@ namespace Client
             _client = new ClientSide();
             _client.Connect(new IPEndPoint(IPAddress.Loopback, 33533));
 
+
             tmrPing.Enabled = true;
             tmrPing.Start();
-           
+            
         }
 
         private void tmrPing_Tick(object sender, EventArgs e)

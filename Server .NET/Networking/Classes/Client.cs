@@ -15,11 +15,13 @@ namespace Server.Networking.Classes
         public DateTime LastPacketReceived { get; set; }
         public byte[] Data { get; set; }
         public TimeSpan Ping { get; set; }
+        public byte[] Buffer { get; set; }
 
 
-        public Client()
+        public Client(Socket socket)
         {
-           
+            Socket = socket;
+           Buffer = new byte[Socket.ReceiveBufferSize];
         }
 
     }

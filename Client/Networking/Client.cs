@@ -13,7 +13,7 @@ namespace Client.Networking
     class ClientSide
     {
         private Socket _clientSocket;
-        private  byte[] _buffer;
+        private byte[] _buffer;
 
         public ClientSide()
         {
@@ -41,7 +41,7 @@ namespace Client.Networking
         void ConnectCallback(IAsyncResult AR)
         {
             _clientSocket.EndConnect(AR);
-            _clientSocket.BeginReceive(_buffer, 0,sizeof(int), SocketFlags.None, ReceiveCallback, null);
+            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
 
 
             //Initilize Connection
@@ -59,7 +59,7 @@ namespace Client.Networking
                 if (length < _clientSocket.ReceiveBufferSize)
                 {
                     _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
-                    }
+                }
                 else { _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None); }
 
                 received = _buffer.Length;

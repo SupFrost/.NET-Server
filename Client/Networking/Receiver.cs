@@ -31,7 +31,7 @@ namespace Client.Networking
                             if (ioHeader == IoHeader.Send)
                             {
                                 //Subtracts the PingTime from the current time to get the Ping in ms.
-                                Global.Ping = (ushort)DateTime.UtcNow.AddMilliseconds(5).Subtract(Global.PingTime).Milliseconds;
+                                Global.Ping = (ushort)DateTime.UtcNow.Subtract(Global.PingTime).Milliseconds;
                             }
                             break;
                         }

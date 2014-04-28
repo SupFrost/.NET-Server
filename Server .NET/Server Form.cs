@@ -13,7 +13,7 @@ namespace Server
 {
     public partial class ServerForm : Form
     {
-        private Server.Networking.Server _server;
+        private Networking.Server _server;
     
 
         public ServerForm()
