@@ -1,4 +1,6 @@
-﻿namespace Server.Networking.Packets
+﻿using System;
+
+namespace Server.Networking.Packets
 {
     public class Receiver
     {
@@ -22,7 +24,7 @@
             switch (iOHeader)
             {
                 case IoHeader.Request:
-                    var standardHeader = (StandardHeader)_pr.ReadUshort();
+                     var standardHeader = (StandardHeader)_pr.ReadUshort();
                     switch (standardHeader)
                     {
                         case StandardHeader.Guid:
@@ -40,8 +42,19 @@
                     }
                     break;
                 case IoHeader.Send:
+                    standardHeader = (StandardHeader) _pr.ReadUshort();
+                    switch (standardHeader)
+                    {
+                        case StandardHeader.Country:
+                            int stringLength = _pr.ReadInt32();
+                            string country = _pr.ReadString(stringLength);
+                            lock (Server.LstClients)
+                                Server.LstClients[_client.Guid].Country = country;
+                            break;
+                    }
+
                     break;
             }
         }
-    }
+ }
 }

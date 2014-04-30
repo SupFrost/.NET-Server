@@ -21,6 +21,26 @@ namespace Server
 
             _server.ClientConnected += _server_ClientConnected;
             _server.ClientDisconnected += _server_ClientDisconnected;
+            _server.ClientUpdated += _server_ClientUpdated;
+
+        }
+
+        void _server_ClientUpdated(Client client, ClientEventType type)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new ClientDelegate(_server_ClientUpdated), new object[] {client, type});
+            }
+            else
+            {
+                switch (type)
+                {
+                    case ClientEventType.UpdatedCountry:
+                        lvConnections.Items[client.Guid.ToString()].SubItems[lvConnections.Columns[3].Index].Text = client.Country;
+                        break;
+                }
+            }
+
         }
 
         void _server_ClientDisconnected(Client client, ClientEventType type)
@@ -43,7 +63,7 @@ namespace Server
             }
             else
             {
-                var lvi = new ListViewItem(new[]{client.Guid.ToString(),client.ConnectionDateTime.ToString(CultureInfo.InvariantCulture),client.LastPacketReceived.ToString(CultureInfo.InvariantCulture), client.LastPacketReceived.ToString(CultureInfo.InvariantCulture)});
+                var lvi = new ListViewItem(new[]{client.Guid.ToString(),client.ConnectionDateTime.ToString(CultureInfo.InvariantCulture),client.LastPacketReceived.ToString(CultureInfo.InvariantCulture)});
                 lvConnections.Items.Add(lvi);
             }
         }

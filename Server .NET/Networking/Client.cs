@@ -12,6 +12,7 @@ namespace Server.Networking
         public byte[] Data { get; set; }
         public TimeSpan Ping { get; set; }
         public byte[] Buffer { get; set; }
+        public string Country { get; set; }
 
 
         public Client(Socket socket)

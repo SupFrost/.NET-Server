@@ -41,8 +41,22 @@ namespace Client.Networking.Packets
                 Global.PingTime = DateTime.UtcNow;
                 return ms.ToArray();
             }
+        }
+        public byte[] SendCountry(string country)
+        {
+            _pw = new PacketWriter();
+            _pw.Write((ushort) IoHeader.Send);
+            _pw.Write((ushort) StandardHeader.Country);
+            _pw.Write(country.Length);
+            _pw.Write(country);
 
-            
+            byte[] data = _pw.GetBytes();
+
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(data, 0, data.Length);
+               return ms.ToArray();
+            }
         }
     }
 }

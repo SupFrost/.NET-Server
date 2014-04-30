@@ -9,6 +9,7 @@
     public enum StandardHeader : ushort
     {
         Guid,
-        Ping
+        Ping,
+    Country
     }
 }

@@ -45,6 +45,22 @@ namespace Server.Networking.Packets
                 _server.ServerSend(_client, ms.ToArray());
             }
         }
+        public void RequestCountry()
+        {
+            _pw = new PacketWriter();
+
+            _pw.Write((ushort) IoHeader.Request);
+            _pw.Write((ushort) StandardHeader.Country);
+
+            byte[] data = _pw.GetBytes();
+
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(data, 0, data.Length);
+                _server.ServerSend(_client, ms.ToArray());
+                }
+        }
+
      
     }
 }

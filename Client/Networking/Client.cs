@@ -65,7 +65,7 @@ namespace Client.Networking
                     received = _buffer.Length;
                 }
 
-                Receiver receiver = new Receiver(_buffer);
+                Receiver receiver = new Receiver(this ,_buffer);
                 receiver.HandlePacket();
 
                 _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
@@ -77,8 +77,7 @@ namespace Client.Networking
             }
 
         }
-
-
+        
         public void ClientSend(byte[] data)
         {
             try
@@ -94,8 +93,6 @@ namespace Client.Networking
             {
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-
         }
 
         void SendCallback(IAsyncResult AR)

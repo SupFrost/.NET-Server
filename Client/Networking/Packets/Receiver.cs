@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Client.Networking.Packets
 {
     class Receiver
     {
     private PacketReader _pr;
-        
-        public Receiver( byte[] data)
+        private ClientSide _client;
+
+    public Receiver(ClientSide client, byte[] data)
         {
             _pr = new PacketReader(data);
-            }
+        _client = client;
+        }
 
         public void HandlePacket()
         {
@@ -28,6 +33,22 @@ namespace Client.Networking.Packets
                                 //Subtracts the PingTime from the current time to get the Ping in ms.
                                 Global.Ping = (ushort)DateTime.UtcNow.Subtract(Global.PingTime).Milliseconds;
                             }
+                            break;
+                            }
+                        case StandardHeader.Country:
+                        {
+                            if (Global.Country == null)
+                            {
+                                object obj = new object();
+
+                       string countryName =  new WebClient().DownloadString("http://api.hostip.info/country.php");
+                              
+                                Global.Country = countryName;
+                            }
+
+                            var s = new Sender();
+                            _client.ClientSend(s.SendCountry(Global.Country));
+                            
                             break;
                         }
                     }

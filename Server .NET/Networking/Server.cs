@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using Server.Networking.Packets;
 
 namespace Server.Networking
@@ -12,9 +13,13 @@ namespace Server.Networking
         private Socket _serverSocket;
         public static Dictionary<Guid, Client> LstClients;
 
+        //The event handler for the client
         public delegate void ClientEventHandler(Client client, ClientEventType type);
+
+        //All the events for the client
         public event ClientEventHandler ClientConnected;
         public event ClientEventHandler ClientDisconnected;
+        public event ClientEventHandler ClientUpdated;
 
         public void Start()
         {
@@ -30,15 +35,14 @@ namespace Server.Networking
         {
             Socket s = _serverSocket.EndAccept(ar);
             var client = new Client(s);
+
             try
             {
-                
-
                 //Add to Client list
-                
-                client.ConnectionDateTime = DateTime.UtcNow;
-                client.Guid = Guid.NewGuid();
 
+                client.ConnectionDateTime = DateTime.UtcNow;
+                client.LastPacketReceived = DateTime.UtcNow;
+                client.Guid = Guid.NewGuid();
 
                 Console.WriteLine(@"Client connected : {0}", client.Guid);
 
@@ -46,10 +50,23 @@ namespace Server.Networking
                     LstClients.Add(client.Guid, client);
                 ClientConnected.Invoke(client, ClientEventType.Connected);
 
-
                 _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
-                client.Socket.BeginReceive(client.Buffer, 0, sizeof (int), SocketFlags.None, ReceiveCallback, client);
+                client.Socket.BeginReceive(client.Buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, client);
 
+                //Initiatilze connection
+                //Get information :)
+
+                Sender sender = new Sender(this, client);
+                sender.RequestCountry();
+
+                while (LstClients[client.Guid].Country == null)
+                {
+                    Thread.Sleep(1);
+                }
+                if (LstClients[client.Guid] != null)
+                {
+                    ClientUpdated.Invoke(LstClients[client.Guid], ClientEventType.UpdatedCountry);
+                }
             }
             catch (Exception)
             {
@@ -94,14 +111,12 @@ namespace Server.Networking
                     received = client.Buffer.Length;
                 }
 
-                //Handling the packet!
-                var receiver = new Receiver(this, client, client.Buffer);
-                receiver.HandlePacket();
-
+       //Handling the packet!
+                    var receiver = new Receiver(this, client, client.Buffer);
+                    receiver.HandlePacket();
 
                 Console.WriteLine(client.LastPacketReceived);
-                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback,
-                    client);
+                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback,client);
             }
             catch (SocketException)
             {
@@ -113,7 +128,6 @@ namespace Server.Networking
                         LstClients.Remove(client.Guid);
                     ClientDisconnected.Invoke(client, ClientEventType.Disconnected);
                 }
-
             }
             catch (ObjectDisposedException)
             {
@@ -126,18 +140,16 @@ namespace Server.Networking
                     ClientDisconnected.Invoke(client, ClientEventType.Disconnected);
                 }
             }
-
-
         }
 
         public void ServerSend(Client client, byte[] data)
         {
             try
             {
-            byte[] dataLength = BitConverter.GetBytes(data.Length);
-            client.Data = data;
+                byte[] dataLength = BitConverter.GetBytes(data.Length);
+                client.Data = data;
 
-            client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
+                client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
             }
             catch (SocketException)
             {
@@ -149,11 +161,7 @@ namespace Server.Networking
                         LstClients.Remove(client.Guid);
                     ClientDisconnected.Invoke(client, ClientEventType.Disconnected);
                 }
-
             }
-
-
-
         }
 
         private static void SendCallback(IAsyncResult ar)
@@ -162,8 +170,6 @@ namespace Server.Networking
             byte[] data = client.Data;
 
             client.Socket.Send(data, data.Length, SocketFlags.None);
-
-
         }
 
 
@@ -172,6 +178,7 @@ namespace Server.Networking
     public enum ClientEventType
     {
         Connected,
-        Disconnected
+        Disconnected,
+        UpdatedCountry
     }
 }

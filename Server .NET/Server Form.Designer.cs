@@ -33,14 +33,15 @@ namespace Server
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("ListViewGroup", System.Windows.Forms.HorizontalAlignment.Left);
             this.button1 = new System.Windows.Forms.Button();
             this.lvConnections = new System.Windows.Forms.ListView();
             this.chGuid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chTimeConnect = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chLastPacket = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chPing = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chCountry = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,7 +60,11 @@ namespace Server
             this.chGuid,
             this.chTimeConnect,
             this.chLastPacket,
-            this.chPing});
+            this.chCountry});
+            listViewGroup1.Header = "ListViewGroup";
+            listViewGroup1.Name = "listViewGroup1";
+            this.lvConnections.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1});
             this.lvConnections.Location = new System.Drawing.Point(0, 27);
             this.lvConnections.Name = "lvConnections";
             this.lvConnections.Size = new System.Drawing.Size(906, 253);
@@ -82,11 +87,6 @@ namespace Server
             this.chLastPacket.Text = "Last Packet";
             this.chLastPacket.Width = 106;
             // 
-            // chPing
-            // 
-            this.chPing.Text = "Ping";
-            this.chPing.Width = 96;
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -102,6 +102,10 @@ namespace Server
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
             this.startToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.startToolStripMenuItem.Text = "Start";
+            // 
+            // chCountry
+            // 
+            this.chCountry.Text = "Country";
             // 
             // ServerForm
             // 
@@ -127,10 +131,10 @@ namespace Server
         private ColumnHeader chGuid;
         private ColumnHeader chTimeConnect;
         private ColumnHeader chLastPacket;
-        private ColumnHeader chPing;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem startToolStripMenuItem;
         public ListView lvConnections;
+        private ColumnHeader chCountry;
     }
 }
 
