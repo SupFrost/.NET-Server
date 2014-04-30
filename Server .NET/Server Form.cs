@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Globalization;
 using System.Windows.Forms;
 using Server.Networking;
-using Server.Networking.Classes;
 
 namespace Server
 {
@@ -29,7 +27,7 @@ namespace Server
         {
             if (InvokeRequired)
             {
-                Invoke(new ClientDelegate(_server_ClientDisconnected), new object[2] { client, type });
+                Invoke(new ClientDelegate(_server_ClientDisconnected), new object[] { client, type });
             }
             else
             {
@@ -41,11 +39,11 @@ namespace Server
         {
             if (InvokeRequired)
             {
-                Invoke(new ClientDelegate(_server_ClientConnected), new object[2] { client, type });
+                Invoke(new ClientDelegate(_server_ClientConnected), new object[] { client, type });
             }
             else
             {
-                var lvi = new ListViewItem(new string[4]{client.Guid.ToString(),client.ConnectionDateTime.ToString(),client.LastPacketReceived.ToString(), client.LastPacketReceived.ToString()});
+                var lvi = new ListViewItem(new[]{client.Guid.ToString(),client.ConnectionDateTime.ToString(CultureInfo.InvariantCulture),client.LastPacketReceived.ToString(CultureInfo.InvariantCulture), client.LastPacketReceived.ToString(CultureInfo.InvariantCulture)});
                 lvConnections.Items.Add(lvi);
             }
         }

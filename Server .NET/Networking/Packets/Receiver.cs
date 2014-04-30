@@ -1,6 +1,4 @@
-﻿using Server.Networking.Classes;
-
-namespace Server.Networking.Packets
+﻿namespace Server.Networking.Packets
 {
     public class Receiver
     {

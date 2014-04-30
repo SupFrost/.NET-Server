@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using Server.Networking.Classes;
 using Server.Networking.Packets;
 
 namespace Server.Networking

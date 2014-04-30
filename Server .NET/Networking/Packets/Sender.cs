@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Server.Networking.Classes;
 
 namespace Server.Networking.Packets
 {
