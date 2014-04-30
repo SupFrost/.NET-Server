@@ -20,7 +20,6 @@ namespace Server
         {
             _server = new Networking.Server();
             _server.Start();
-      
 
             _server.ClientConnected += _server_ClientConnected;
             _server.ClientDisconnected += _server_ClientDisconnected;
@@ -49,15 +48,6 @@ namespace Server
                 var lvi = new ListViewItem(new string[4]{client.Guid.ToString(),client.ConnectionDateTime.ToString(),client.LastPacketReceived.ToString(), client.LastPacketReceived.ToString()});
                 lvConnections.Items.Add(lvi);
             }
-          
         }
-       
-    }
-
-    public enum Control
-    {
-        Add,
-        Remove,
-        Update
     }
 }
