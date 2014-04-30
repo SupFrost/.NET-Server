@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Server.Networking.Classes;
 
@@ -7,9 +8,8 @@ namespace Server
 {
     public partial class ServerForm : Form
     {
+        private Timer tmrTimer;
         private Networking.Server _server;
-
-
         public ServerForm()
         {
             InitializeComponent();
@@ -20,34 +20,31 @@ namespace Server
             _server = new Networking.Server();
             _server.Start();
 
-            timer1.Enabled = true;
-            timer1.Interval = 1000;
-            //timer1.Start();
-
+            tmrTimer = new Timer();
+            tmrTimer.Interval = 1000;
+            tmrTimer.Tick += UpdateListview;
+            tmrTimer.Start();
         }
 
-
-        private void timer1_Tick(object sender, EventArgs e)
+        private void UpdateListview(object sender, EventArgs e)
         {
-            try
+
+            lvConnections.Items.Clear();
+
+            foreach (KeyValuePair<Guid, Client> pair in Networking.Server.LstClients)
             {
-               
+                Client client = pair.Value;
+                var lvi = new ListViewItem(new string[4]{client.Guid.ToString(),client.ConnectionDateTime.ToString(),client.LastPacketReceived.ToString(), client.LastPacketReceived.ToString()});
+                lvConnections.Items.Add(lvi);
 
             }
-            finally
-            {
-
-            }
         }
+    }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
- lvClients.Items.Clear();
-                foreach (KeyValuePair<Guid, Client> pair in Networking.Server.LstClients)
-                {
-                    lvClients.Items.Add(pair.Key.ToString());
-
-                }
-        }
+    public enum Control
+    {
+        Add,
+        Remove,
+        Update
     }
 }

@@ -18,7 +18,7 @@ namespace Server.Networking
     {
 
         private Socket _serverSocket;
-       public static Dictionary<Guid, Client> LstClients;
+        public static Dictionary<Guid, Client> LstClients;
 
         public void Start()
         {
@@ -38,24 +38,24 @@ namespace Server.Networking
             Client client = null;
             //try
             //{
-                Socket s = _serverSocket.EndAccept(AR);
+            Socket s = _serverSocket.EndAccept(AR);
 
-                //Add to Client list
-                client = new Client(s);
-      client.ConnectionDateTime = DateTime.UtcNow;
-                client.Guid = Guid.NewGuid();
-                
+            //Add to Client list
+            client = new Client(s);
+            client.ConnectionDateTime = DateTime.UtcNow;
+            client.Guid = Guid.NewGuid();
 
-                Console.WriteLine("Client connected : " + client.Guid);
 
-                lock (LstClients)
-                    LstClients.Add(client.Guid, client);
+            Console.WriteLine("Client connected : " + client.Guid);
 
-                
-                _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
-                client.Socket.BeginReceive(client.Buffer, 0, sizeof (int), SocketFlags.None, ReceiveCallback, client);
+            lock (LstClients)
+                LstClients.Add(client.Guid, client);
 
-                //}
+
+            _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
+            client.Socket.BeginReceive(client.Buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, client);
+
+            //}
             //catch (Exception ex)
             //{
             //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -72,18 +72,18 @@ namespace Server.Networking
         private void ReceiveCallback(IAsyncResult AR)
         {
             Client client = null;
-            //try
-            //{
-                client = (Client) AR.AsyncState;
 
-                //update Client
-                LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
+            client = (Client)AR.AsyncState;
+
+            //update Client
+            LstClients[client.Guid].LastPacketReceived = DateTime.UtcNow;
             if (client.Buffer.Length == 0)
             {
                 return;
             }
-
-            int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
+            try
+            {
+                int PacketLength = BitConverter.ToInt32(client.Buffer, 0);
                 client.Buffer = new byte[PacketLength];
 
                 int received = 0;
@@ -108,33 +108,31 @@ namespace Server.Networking
 
 
                 Console.WriteLine(client.LastPacketReceived);
+                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback, client);
+            }
+            catch (SocketException sckException)
+            {
+                if (client.Socket != null)
+                {
+                    client.Socket.Close();
+                    Console.WriteLine("Client disconnected: " + client.Guid);
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
+                }
+
+            }
 
 
-
-                //Start receiving again!
-                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, ReceiveCallback,client);
-            //}
-
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    if (client.Socket != null)
-            //    {
-            //        client.Socket.Close();
-            //        lock (LstClients)
-            //            LstClients.Remove(client.Guid);
-            //    }
-            //}
         }
 
         public static void ServerSend(Client client, byte[] data)
         {
             //try
             //{
-                byte[] dataLength = BitConverter.GetBytes(data.Length);
-                client.Data = data;
+            byte[] dataLength = BitConverter.GetBytes(data.Length);
+            client.Data = data;
 
-                client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
+            client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
             //}
             //catch (SocketException socketException)
             //{
@@ -149,9 +147,9 @@ namespace Server.Networking
         {
             Client client = (Client)AR.AsyncState;
             byte[] data = client.Data;
-         
-     client.Socket.Send(data, data.Length, SocketFlags.None);
-   
+
+            client.Socket.Send(data, data.Length, SocketFlags.None);
+
 
         }
 

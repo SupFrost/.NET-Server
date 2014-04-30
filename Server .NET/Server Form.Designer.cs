@@ -1,11 +1,16 @@
-﻿namespace Server
+﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Server
 {
     partial class ServerForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -28,56 +33,104 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.lvClients = new System.Windows.Forms.ListView();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.button1 = new System.Windows.Forms.Button();
+            this.lvConnections = new System.Windows.Forms.ListView();
+            this.chGuid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chTimeConnect = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chLastPacket = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chPing = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lvClients
-            // 
-            this.lvClients.Location = new System.Drawing.Point(12, 12);
-            this.lvClients.Name = "lvClients";
-            this.lvClients.Size = new System.Drawing.Size(392, 172);
-            this.lvClients.TabIndex = 0;
-            this.lvClients.UseCompatibleStateImageBehavior = false;
-            // 
-            // timer1
-            // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 190);
+            this.button1.Location = new System.Drawing.Point(12, 286);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // lvConnections
+            // 
+            this.lvConnections.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chGuid,
+            this.chTimeConnect,
+            this.chLastPacket,
+            this.chPing});
+            this.lvConnections.Location = new System.Drawing.Point(0, 27);
+            this.lvConnections.Name = "lvConnections";
+            this.lvConnections.Size = new System.Drawing.Size(906, 253);
+            this.lvConnections.TabIndex = 2;
+            this.lvConnections.UseCompatibleStateImageBehavior = false;
+            this.lvConnections.View = System.Windows.Forms.View.Details;
+            // 
+            // chGuid
+            // 
+            this.chGuid.Text = "GUID";
+            this.chGuid.Width = 173;
+            // 
+            // chTimeConnect
+            // 
+            this.chTimeConnect.Text = "Time Connected";
+            this.chTimeConnect.Width = 136;
+            // 
+            // chLastPacket
+            // 
+            this.chLastPacket.Text = "Last Packet";
+            this.chLastPacket.Width = 106;
+            // 
+            // chPing
+            // 
+            this.chPing.Text = "Ping";
+            this.chPing.Width = 96;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.startToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(906, 24);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // startToolStripMenuItem
+            // 
+            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.startToolStripMenuItem.Text = "Start";
             // 
             // ServerForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(416, 385);
+            this.ClientSize = new System.Drawing.Size(906, 379);
+            this.Controls.Add(this.lvConnections);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.lvClients);
+            this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "ServerForm";
             this.Text = "Server Form";
             this.Load += new System.EventHandler(this.ServerForm_Load);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        internal System.Windows.Forms.ListView lvClients;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Button button1;
-
-
-
+        private Button button1;
+        private ColumnHeader chGuid;
+        private ColumnHeader chTimeConnect;
+        private ColumnHeader chLastPacket;
+        private ColumnHeader chPing;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem startToolStripMenuItem;
+        public ListView lvConnections;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Client.Networking.Packets;
@@ -82,6 +83,10 @@ namespace Client.Networking
         {
             try
             {
+                while (!Global.Connected)
+                {
+                    Application.DoEvents();
+                }
                 byte[] dataLength = BitConverter.GetBytes(data.Length);
                 _clientSocket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, data);
             }

@@ -59,12 +59,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ObservableDictionary.cs" />
     <Compile Include="Networking\Packets\Headers.cs" />
     <Compile Include="Networking\Packets\PacketIO.cs" />
     <Compile Include="Networking\Packets\Receiver.cs" />
     <Compile Include="Networking\Packets\Sender.cs" />
     <Compile Include="Networking\Server.cs" />
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Server Form.cs">
       <SubType>Form</SubType>
     </Compile>
