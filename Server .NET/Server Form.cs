@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Server.Networking;
 using Server.Networking.Classes;
 
 namespace Server
 {
     public partial class ServerForm : Form
     {
-        private Timer tmrTimer;
+        public delegate void ClientDelegate(Client client, ClientEventType type);
         private Networking.Server _server;
         public ServerForm()
         {
@@ -19,26 +20,38 @@ namespace Server
         {
             _server = new Networking.Server();
             _server.Start();
+      
 
-            tmrTimer = new Timer();
-            tmrTimer.Interval = 1000;
-            tmrTimer.Tick += UpdateListview;
-            tmrTimer.Start();
+            _server.ClientConnected += _server_ClientConnected;
+            _server.ClientDisconnected += _server_ClientDisconnected;
         }
 
-        private void UpdateListview(object sender, EventArgs e)
+        void _server_ClientDisconnected(Client client, ClientEventType type)
         {
-
-            lvConnections.Items.Clear();
-
-            foreach (KeyValuePair<Guid, Client> pair in Networking.Server.LstClients)
+            if (InvokeRequired)
             {
-                Client client = pair.Value;
-                var lvi = new ListViewItem(new string[4]{client.Guid.ToString(),client.ConnectionDateTime.ToString(),client.LastPacketReceived.ToString(), client.LastPacketReceived.ToString()});
-                lvConnections.Items.Add(lvi);
-
+                Invoke(new ClientDelegate(_server_ClientDisconnected), new object[2] { client, type });
+            }
+            else
+            {
+                lvConnections.Items.Remove(lvConnections.FindItemWithText(client.Guid.ToString()));
             }
         }
+
+        void _server_ClientConnected(Client client, ClientEventType type)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new ClientDelegate(_server_ClientConnected), new object[2] { client, type });
+            }
+            else
+            {
+                var lvi = new ListViewItem(new string[4]{client.Guid.ToString(),client.ConnectionDateTime.ToString(),client.LastPacketReceived.ToString(), client.LastPacketReceived.ToString()});
+                lvConnections.Items.Add(lvi);
+            }
+          
+        }
+       
     }
 
     public enum Control

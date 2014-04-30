@@ -20,10 +20,12 @@ namespace Server.Networking
         private Socket _serverSocket;
         public static Dictionary<Guid, Client> LstClients;
 
+        public delegate void ClientEventHandler(Client client, ClientEventType type);
+        public event ClientEventHandler ClientConnected;
+        public event ClientEventHandler ClientDisconnected;
+
         public void Start()
         {
-
-
             LstClients = new Dictionary<Guid, Client>();
 
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -36,36 +38,38 @@ namespace Server.Networking
         private void AcceptCallback(IAsyncResult AR)
         {
             Client client = null;
-            //try
-            //{
-            Socket s = _serverSocket.EndAccept(AR);
+            try
+            {
+                Socket s = _serverSocket.EndAccept(AR);
 
-            //Add to Client list
-            client = new Client(s);
-            client.ConnectionDateTime = DateTime.UtcNow;
-            client.Guid = Guid.NewGuid();
-
-
-            Console.WriteLine("Client connected : " + client.Guid);
-
-            lock (LstClients)
-                LstClients.Add(client.Guid, client);
+                //Add to Client list
+                client = new Client(s);
+                client.ConnectionDateTime = DateTime.UtcNow;
+                client.Guid = Guid.NewGuid();
 
 
-            _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
-            client.Socket.BeginReceive(client.Buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, client);
+                Console.WriteLine("Client connected : " + client.Guid);
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    if (client.Socket != null)
-            //    {
-            //        client.Socket.Close();
-            //        lock (LstClients)
-            //            LstClients.Remove(client.Guid);
-            //    }
-            //}
+                lock (LstClients)
+                    LstClients.Add(client.Guid, client);
+                ClientConnected.Invoke(client, ClientEventType.Connected);
+
+
+                _serverSocket.BeginAccept(AcceptCallback, _serverSocket);
+                client.Socket.BeginReceive(client.Buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, client);
+
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (client.Socket != null)
+                {
+                    client.Socket.Close();
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
+                    ClientDisconnected.Invoke(client,ClientEventType.Disconnected);
+                }
+            }
 
         }
 
@@ -103,7 +107,7 @@ namespace Server.Networking
                 }
 
                 //Handling the packet!
-                Receiver receiver = new Receiver(client, client.Buffer);
+                Receiver receiver = new Receiver(this, client, client.Buffer);
                 receiver.HandlePacket();
 
 
@@ -118,6 +122,7 @@ namespace Server.Networking
                     Console.WriteLine("Client disconnected: " + client.Guid);
                     lock (LstClients)
                         LstClients.Remove(client.Guid);
+                    ClientDisconnected.Invoke(client, ClientEventType.Disconnected);
                 }
 
             }
@@ -125,19 +130,27 @@ namespace Server.Networking
 
         }
 
-        public static void ServerSend(Client client, byte[] data)
+        public void ServerSend(Client client, byte[] data)
         {
-            //try
-            //{
+            try
+            {
             byte[] dataLength = BitConverter.GetBytes(data.Length);
             client.Data = data;
 
             client.Socket.BeginSend(dataLength, 0, dataLength.Length, SocketFlags.None, SendCallback, client);
-            //}
-            //catch (SocketException socketException)
-            //{
-            //    MessageBox.Show(socketException.ErrorCode.ToString());
-            //}
+            }
+            catch (SocketException sckException)
+            {
+                if (client.Socket != null)
+                {
+                    client.Socket.Close();
+                    Console.WriteLine("Client disconnected: " + client.Guid);
+                    lock (LstClients)
+                        LstClients.Remove(client.Guid);
+                    ClientDisconnected.Invoke(client, ClientEventType.Disconnected);
+                }
+
+            }
 
 
 
@@ -154,5 +167,11 @@ namespace Server.Networking
         }
 
 
+    }
+
+    public enum ClientEventType
+    {
+        Connected,
+        Disconnected
     }
 }

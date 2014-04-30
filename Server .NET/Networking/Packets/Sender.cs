@@ -8,9 +8,11 @@ namespace Server.Networking.Packets
     {
         private readonly Client _client;
         private PacketWriter _pw;
-        public Sender(Client client)
+        private readonly  Server _server;
+        public Sender(Server server, Client client)
         {
             _client = client;
+            _server = server;
         }
 
         public void SendGuid(Guid guid)
@@ -26,7 +28,7 @@ namespace Server.Networking.Packets
             using (var ms = new MemoryStream())
             {
                 ms.Write(data, 0, data.Length);
-                Server.ServerSend(_client, ms.ToArray());
+                _server.ServerSend(_client, ms.ToArray());
             }
         }
         public void SendPing()
@@ -41,7 +43,7 @@ namespace Server.Networking.Packets
             using (var ms = new MemoryStream())
             {
                 ms.Write(data, 0, data.Length);
-                Server.ServerSend(_client,ms.ToArray());
+                _server.ServerSend(_client, ms.ToArray());
             }
         }
      

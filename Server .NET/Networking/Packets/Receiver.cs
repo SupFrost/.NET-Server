@@ -7,11 +7,13 @@ namespace Server.Networking.Packets
         private readonly Client _client;
         private readonly PacketReader _pr;
         private Sender _sender;
+        private readonly Server _server;
 
-        public Receiver(Client client, byte[] data)
+        public Receiver(Server server, Client client, byte[] data)
         {
 
             _client = client;
+            _server = server;
             _pr = new PacketReader(data);
 
         }
@@ -28,13 +30,13 @@ namespace Server.Networking.Packets
                         case StandardHeader.Guid:
 
                             // Send Guid back!
-                            _sender = new Sender(_client);
+                            _sender = new Sender(_server,_client);
                             _sender.SendGuid(_client.Guid);
                             break;
                         case StandardHeader.Ping:
 
                             //send Ping back!
-                            _sender = new Sender(_client);
+                            _sender = new Sender(_server, _client);
                             _sender.SendPing();
                             break;
                     }
