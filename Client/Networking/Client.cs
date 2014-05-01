@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using Client.Networking.Packets;
 
 namespace Client.Networking
 {
     class ClientSide
     {
-        private Socket _clientSocket;
-        private byte[] _buffer;
+        private  Socket _clientSocket;
+        private readonly byte[] _buffer;
+        public delegate void ClientEventHandler(EventType type);
+
+        public event ClientEventHandler Connected;
+        public event ClientEventHandler Disconnected;
+        public event ClientEventHandler Error;
 
         public ClientSide()
         {
@@ -26,27 +29,52 @@ namespace Client.Networking
                 if (Global.Connected)
                     return false;
 
+                if( _clientSocket == null)
+                    _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
                 _clientSocket.BeginConnect(ip, ConnectCallback, null);
                 return true;
             }
             catch (Exception ex)
             {
                 Global.Connected = false;
+                Error.Invoke(EventType.Error);
+                Disconnected.Invoke(EventType.Disconnected);
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
-
-        void ConnectCallback(IAsyncResult AR)
+        public bool Disconnect()
         {
-            Global.Connected = true;
-            _clientSocket.EndConnect(AR);
-            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+            if (Global.Connected)
+            {
+                _clientSocket.Close();
+                _clientSocket.Dispose();
+                Disconnected.Invoke(EventType.Disconnected);
+             }
 
-            //Initilize Connection
+            return true;
         }
 
-        void ReceiveCallback(IAsyncResult AR)
+        void ConnectCallback(IAsyncResult ar)
+        {
+            try
+            {
+                Global.Connected = true;
+            _clientSocket.EndConnect(ar);
+                Connected.Invoke(EventType.Connected);
+            _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+            }
+            catch (Exception ex)
+            {
+                Global.Connected = false;
+                Error.Invoke(EventType.Error);
+                Disconnected(EventType.Disconnected);
+                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        void ReceiveCallback(IAsyncResult ar)
         {
             try
             {
@@ -95,11 +123,11 @@ namespace Client.Networking
             }
         }
 
-        void SendCallback(IAsyncResult AR)
+        void SendCallback(IAsyncResult ar)
         {
             try
             {
-                byte[] data = (byte[])AR.AsyncState;
+                byte[] data = (byte[])ar.AsyncState;
                 _clientSocket.Send(data, 0, data.Length, SocketFlags.None);
             }
             catch (Exception ex)
@@ -113,5 +141,12 @@ namespace Client.Networking
 
 
 
+    }
+
+    public enum EventType
+    {
+      Connected,
+        Disconnected,
+        Error
     }
 }
