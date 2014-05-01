@@ -9,9 +9,11 @@ namespace Server
     {
         public delegate void ClientDelegate(Client client, ClientEventType type);
         private Networking.Server _server;
+        private ListView.ListViewItemCollection lvic;
         public ServerForm()
         {
             InitializeComponent();
+            lvic = new ListView.ListViewItemCollection(lvConnections);
         }
 
         private void ServerForm_Load(object sender, EventArgs e)
@@ -36,7 +38,7 @@ namespace Server
                 switch (type)
                 {
                     case ClientEventType.UpdatedCountry:
-                        lvConnections.Items[client.Guid.ToString()].SubItems[lvConnections.Columns[3].Index].Text = client.Country;
+                        lvic[0].SubItems[3].Text = client.Country;
                         break;
                 }
             }
@@ -63,8 +65,12 @@ namespace Server
             }
             else
             {
-                var lvi = new ListViewItem(new[]{client.Guid.ToString(),client.ConnectionDateTime.ToString(CultureInfo.InvariantCulture),client.LastPacketReceived.ToString(CultureInfo.InvariantCulture)});
-                lvConnections.Items.Add(lvi);
+                lvic.Add(client.Guid.ToString(), client.Guid.ToString()).SubItems.AddRange(new[] { client.ConnectionDateTime.ToString(), client.LastPacketReceived.ToString(),"" });
+
+
+                //lvConnections.Items.Add(client.Guid.ToString(), client.Guid.ToString());
+                //var lvi = lvConnections.Items[client.Guid.ToString()].SubItems.Add(client.ConnectionDateTime.ToString());
+                //var lvi2 = lvConnections.Items[client.Guid.ToString()].SubItems.Add(client.LastPacketReceived.ToString());
             }
         }
     }
