@@ -9,11 +9,9 @@ namespace Server
     {
         public delegate void ClientDelegate(Client client, ClientEventType type);
         private Networking.Server _server;
-        private ListView.ListViewItemCollection lvic;
         public ServerForm()
         {
             InitializeComponent();
-            lvic = new ListView.ListViewItemCollection(lvConnections);
         }
 
         private void ServerForm_Load(object sender, EventArgs e)
@@ -31,18 +29,18 @@ namespace Server
         {
             if (InvokeRequired)
             {
-                Invoke(new ClientDelegate(_server_ClientUpdated), new object[] {client, type});
+                Invoke(new ClientDelegate(_server_ClientUpdated), new object[] { client, type });
             }
             else
             {
                 switch (type)
                 {
                     case ClientEventType.UpdatedCountry:
-                        lvic[0].SubItems[3].Text = client.Country;
+
+                        lvConnections.Items[lvConnections.FindItemWithText(client.Guid.ToString()).Index].SubItems[3].Text = client.Country;
                         break;
                 }
             }
-
         }
 
         void _server_ClientDisconnected(Client client, ClientEventType type)
@@ -65,12 +63,11 @@ namespace Server
             }
             else
             {
-                lvic.Add(client.Guid.ToString(), client.Guid.ToString()).SubItems.AddRange(new[] { client.ConnectionDateTime.ToString(), client.LastPacketReceived.ToString(),"" });
+                var liv = new ListViewItem(client.Guid.ToString());
+                liv.SubItems.AddRange(new[] { client.ConnectionDateTime.ToString(), client.LastPacketReceived.ToString(), "" });
 
+                lvConnections.Items.Add(liv);
 
-                //lvConnections.Items.Add(client.Guid.ToString(), client.Guid.ToString());
-                //var lvi = lvConnections.Items[client.Guid.ToString()].SubItems.Add(client.ConnectionDateTime.ToString());
-                //var lvi2 = lvConnections.Items[client.Guid.ToString()].SubItems.Add(client.LastPacketReceived.ToString());
             }
         }
     }

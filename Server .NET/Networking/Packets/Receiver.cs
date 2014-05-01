@@ -24,7 +24,7 @@ namespace Server.Networking.Packets
             switch (iOHeader)
             {
                 case IoHeader.Request:
-                     var standardHeader = (StandardHeader)_pr.ReadUshort();
+                    var standardHeader = (StandardHeader)_pr.ReadUshort();
                     switch (standardHeader)
                     {
                         case StandardHeader.Guid:
@@ -46,8 +46,7 @@ namespace Server.Networking.Packets
                     switch (standardHeader)
                     {
                         case StandardHeader.Country:
-                            int stringLength = _pr.ReadInt32();
-                            string country = _pr.ReadString(stringLength);
+                        string country = _pr.ReadString();
                             lock (Server.LstClients)
                                 Server.LstClients[_client.Guid].Country = country;
                             break;

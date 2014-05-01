@@ -47,7 +47,6 @@ namespace Client.Networking.Packets
             _pw = new PacketWriter();
             _pw.Write((ushort) IoHeader.Send);
             _pw.Write((ushort) StandardHeader.Country);
-            _pw.Write(country.Length);
             _pw.Write(country);
 
             byte[] data = _pw.GetBytes();

@@ -94,7 +94,7 @@ namespace Server.Networking.Packets
         }
 
         #region Standard Reads
-        public Int32 ReadInt32()
+        public int ReadInt32()
         {
             byte[] data = new byte[sizeof(Int32)];
             _ms.Read(data, 0, sizeof(Int32));
@@ -110,12 +110,13 @@ namespace Server.Networking.Packets
             return BitConverter.ToUInt16(data, 0);
         }
 
-        public String ReadString(int length)
+        public string ReadString()
         {
-            byte[] data = new byte[length];
-            _ms.Read(data, 0, length);
+            int length = ReadInt32();
+            var data = new byte[length];
+            _ms.Read(data, 0,length);
 
-            String value = BitConverter.ToString(data);
+            string value = Encoding.ASCII.GetString(data);
 
           return value;
         }

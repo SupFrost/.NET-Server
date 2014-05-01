@@ -117,7 +117,7 @@ namespace Client.Networking.Packets
             byte[] data = new byte[length];
             _ms.Read(data, 0, length);
 
-            String value = BitConverter.ToString(data);
+            String value = Encoding.ASCII.GetString(data);
 
 
             return value;
@@ -134,10 +134,10 @@ namespace Client.Networking.Packets
 
         public Guid ReadGuid()
         {
-            int length = ReadInt32();
-            byte[] data = ReadBytes(length);
+            var length = ReadInt32();
+            var data = ReadBytes(length);
 
-            Guid guid = new Guid(data);
+            var guid = new Guid(data);
 
             return guid;
         }
