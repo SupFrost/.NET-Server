@@ -59,17 +59,17 @@ namespace Client.Networking.Packets
         #region non-standard writes
         public void Write(Image image)
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
             image.Save(ms, ImageFormat.Png);
             ms.Close();
 
-            byte[] imageBytes = ms.ToArray();
+            var imageBytes = ms.ToArray();
             Write(imageBytes.Length);
             Write(imageBytes);
         }
         public void Write(String value)
         {
-            byte[] data = Encoding.ASCII.GetBytes(value);
+            var data = Encoding.ASCII.GetBytes(value);
 
             Write(data.Length);
             Write(data);
@@ -77,7 +77,7 @@ namespace Client.Networking.Packets
         }
         public void Write(Guid guid)
         {
-            byte[] data = guid.ToByteArray();
+            var data = guid.ToByteArray();
 
             Write(data.Length);
             Write(data);
@@ -98,7 +98,7 @@ namespace Client.Networking.Packets
         #region Standard Reads
         public Int32 ReadInt32()
         {
-            byte[] data = new byte[sizeof(Int32)];
+            var data = new byte[sizeof(Int32)];
             _ms.Read(data, 0, sizeof(Int32));
 
             return BitConverter.ToInt32(data, 0);
@@ -106,7 +106,7 @@ namespace Client.Networking.Packets
 
         public ushort ReadUshort()
         {
-            byte[] data = new byte[sizeof(ushort)];
+            var data = new byte[sizeof(ushort)];
             _ms.Read(data, 0, sizeof(ushort));
 
             return BitConverter.ToUInt16(data, 0);
@@ -114,10 +114,10 @@ namespace Client.Networking.Packets
 
         public string ReadString(int length)
         {
-            byte[] data = new byte[length];
+            var data = new byte[length];
             _ms.Read(data, 0, length);
 
-            String value = Encoding.ASCII.GetString(data);
+            var value = Encoding.ASCII.GetString(data);
 
 
             return value;
@@ -127,7 +127,7 @@ namespace Client.Networking.Packets
         #region Non-standard Reads
         public byte[] ReadBytes(int length)
         {
-            byte[] data = new byte[length];
+            var data = new byte[length];
             _ms.Read(data, 0, length);
             return data;
         }
@@ -147,7 +147,7 @@ namespace Client.Networking.Packets
             int length = ReadInt32();
             byte[] bytes = ReadBytes(length);
             Image img;
-            using (MemoryStream ms = new MemoryStream(bytes))
+            using (var ms = new MemoryStream(bytes))
             {
                 img = Image.FromStream(ms);
             }

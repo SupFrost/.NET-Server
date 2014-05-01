@@ -37,7 +37,7 @@ namespace Server
                 {
                     case ClientEventType.UpdatedCountry:
 
-                        lvConnections.Items[lvConnections.FindItemWithText(client.Guid.ToString()).Index].SubItems[3].Text = client.Country;
+                        lvConnections.Items[client.Guid.ToString()].SubItems[lvConnections.Columns.IndexOf(chCountry)].Text = client.Country;
                         break;
                 }
             }
@@ -63,8 +63,8 @@ namespace Server
             }
             else
             {
-                var liv = new ListViewItem(client.Guid.ToString());
-                liv.SubItems.AddRange(new[] { client.ConnectionDateTime.ToString(), client.LastPacketReceived.ToString(), "" });
+                var liv = new ListViewItem(client.Guid.ToString()) {Name = client.Guid.ToString()};
+                liv.SubItems.AddRange(new[] {client.ConnectionDateTime.ToString(CultureInfo.InvariantCulture), client.LastPacketReceived.ToString(CultureInfo.InvariantCulture), "" });
 
                 lvConnections.Items.Add(liv);
 
