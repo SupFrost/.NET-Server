@@ -3,18 +3,21 @@ using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using Client.Networking.Packets;
+using Microsoft.Win32.SafeHandles;
 
 namespace Client.Networking
 {
-    class ClientSide
+    class ClientSide : IDisposable
     {
         private  Socket _clientSocket;
-        private readonly byte[] _buffer;
+        private  byte[] _buffer;
         public delegate void ClientEventHandler(EventType type);
+        private bool disposed = false;
+        private SafeFileHandle safeHandle; 
 
+        //All the events for the client
         public event ClientEventHandler Connected;
         public event ClientEventHandler Disconnected;
-        public event ClientEventHandler Error;
 
         public ClientSide()
         {
@@ -38,7 +41,6 @@ namespace Client.Networking
             catch (Exception ex)
             {
                 Global.Connected = false;
-                Error.Invoke(EventType.Error);
                 Disconnected.Invoke(EventType.Disconnected);
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -50,11 +52,31 @@ namespace Client.Networking
             {
                 _clientSocket.Close();
                 _clientSocket.Dispose();
+                _buffer = new byte[0];
+                Global.Connected = false;
                 Disconnected.Invoke(EventType.Disconnected);
-             }
+            }
 
             return true;
         }
+
+        public void Dispose()
+        {
+          
+            Dispose(true);
+            GC.SuppressFinalize(this);
+           }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            // Dispose of managed resources here. 
+            if (disposing)
+                _clientSocket.Dispose();
+            // Dispose of any unmanaged resources not wrapped in safe handles.
+
+            disposed = true;
+        }  
 
         void ConnectCallback(IAsyncResult ar)
         {
@@ -68,7 +90,6 @@ namespace Client.Networking
             catch (Exception ex)
             {
                 Global.Connected = false;
-                Error.Invoke(EventType.Error);
                 Disconnected(EventType.Disconnected);
                 MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -88,20 +109,32 @@ namespace Client.Networking
                     {
                         _clientSocket.Receive(_buffer, received, length, SocketFlags.None);
                     }
-                    else { _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None); }
+                    else
+                    {
+                        _clientSocket.Receive(_buffer, received, _clientSocket.ReceiveBufferSize, SocketFlags.None);
+                    }
 
                     received = _buffer.Length;
                 }
 
-                Receiver receiver = new Receiver(this ,_buffer);
+                var receiver = new Receiver(this, _buffer);
                 receiver.HandlePacket();
 
-                _clientSocket.BeginReceive(_buffer, 0, sizeof(int), SocketFlags.None, ReceiveCallback, null);
+                _clientSocket.BeginReceive(_buffer, 0, sizeof (int), SocketFlags.None, ReceiveCallback, null);
             }
             catch (SocketException socketException)
             {
-                MessageBox.Show(socketException.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
+                MessageBox.Show(socketException.Message, Application.ProductName, MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                
+
             }
 
         }
@@ -119,7 +152,9 @@ namespace Client.Networking
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Disconnect();
+                
             }
         }
 
@@ -147,6 +182,5 @@ namespace Client.Networking
     {
       Connected,
         Disconnected,
-        Error
     }
 }
