@@ -10,6 +10,12 @@
     {
         Guid,
         Ping,
-    Country
+        Country
+    }
+
+    public enum ClientGroup : ushort
+    {
+        Default,
+        Secondary
     }
 }
