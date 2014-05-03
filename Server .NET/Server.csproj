@@ -63,7 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Networking\Packets\Headers.cs" />
+    <Compile Include="Networking\Packets\Enums.cs" />
     <Compile Include="Networking\Packets\PacketIO.cs" />
     <Compile Include="Networking\Packets\Receiver.cs" />
     <Compile Include="Networking\Packets\Sender.cs" />

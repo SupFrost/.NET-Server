@@ -102,7 +102,6 @@ namespace Client.Networking
                 int length = BitConverter.ToInt32(_buffer, 0);
                 int received = 0;
 
-
                 while (received < length)
                 {
                     if (length < _clientSocket.ReceiveBufferSize)

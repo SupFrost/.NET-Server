@@ -53,13 +53,10 @@ namespace Client
                 btnConnect.Enabled = false;
                 tmrPing.Start();
             }
-          
-
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-
             _sender = new Sender();
 
             _client.ClientSend(_sender.RequestGuid());

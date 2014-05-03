@@ -13,6 +13,7 @@ namespace Server.Networking
         public TimeSpan Ping { get; set; }
         public byte[] Buffer { get; set; }
         public string Country { get; set; }
+        public ushort Group { get; set; }
 
 
         public Client(Socket socket)
@@ -22,4 +23,5 @@ namespace Server.Networking
         }
 
     }
+
 }

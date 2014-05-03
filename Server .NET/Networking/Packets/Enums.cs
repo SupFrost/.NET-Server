@@ -12,4 +12,10 @@
         Ping,
         Country
     }
+
+    public enum ClientGroup : ushort
+    {
+        Default,
+        Secondary
+    }
 }
